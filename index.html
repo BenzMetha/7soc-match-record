@@ -168,7 +168,7 @@
   <!-- Header row -->
   <div class="flex items-center px-3 py-1 text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] mb-1">
     <span class="w-6 text-center">#</span>
-    <span class="flex-1 ml-2">ทีม</span>
+    <span class="flex-1 ml-2">TEAMS</span>
     <span class="w-7 text-center">MP</span>
     <span class="w-7 text-center">W</span>
     <span class="w-7 text-center">D</span>
@@ -193,9 +193,9 @@
   </div>
   <!-- Filter chips -->
   <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
-    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ทั้งหมด</button>
-    <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">กำลังจะมา</button>
-    <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">จบแล้ว</button>
+    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ALL PROGRAMS</button>
+    <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">UPCOMING</button>
+    <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">FULL-TIME</button>
   </div>
   <div id="matches-list" class="space-y-3"></div>
 </section>
@@ -462,6 +462,7 @@ function renderModalContent(match, events) {
   const eventIcons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
 
   document.getElementById('modal-content').innerHTML = `
+
     <!-- Match Header -->
     <div class="flex items-center justify-between mb-5 mt-1">
       <div class="flex flex-col items-center gap-1 flex-1">
@@ -543,12 +544,21 @@ function renderModalContent(match, events) {
         ${playerChips(awayPlayers, 'away')}
       </div>
 
-      <button onclick="addEvent('${match.home_team}','${match.away_team}')"
-        class="w-full mt-3 bg-[#1E2B22] hover:bg-green-500/20 border border-[#1E2B22] hover:border-green-500 text-green-400 font-bold font-display py-2.5 rounded-xl transition">
-        + เพิ่ม Event
-      </button>
+      <!-- ✅ ใส่ class คืน -->
+<button id="btn-add-event"
+  data-home="${match.home_team}"
+  data-away="${match.away_team}"
+  class="w-full mt-3 bg-[#1E2B22] hover:bg-green-500/20 border border-[#1E2B22] hover:border-green-500 text-green-400 font-bold font-display py-2.5 rounded-xl transition">
+  + เพิ่ม Event
+</button>
     </div>
   `;
+
+  // addEventListener หลัง innerHTML เสร็จแล้ว — element จึงมีอยู่จริง
+  document.getElementById('btn-add-event').addEventListener('click', () => {
+    const btn = document.getElementById('btn-add-event');
+    addEvent(btn.dataset.home, btn.dataset.away);
+  });
 }
 
 function playerChips(players, side) {
