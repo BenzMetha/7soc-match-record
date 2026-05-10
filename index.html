@@ -143,8 +143,8 @@
 <header class="relative z-10 px-4 pt-5 pb-3">
   <div class="flex items-center justify-between mb-4">
     <div>
-      <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase">PRIJIT || TUESDAY</p>
-      <h1 class="font-display font-black text-3xl leading-none text-white" id="league-title">7SOC VIP35UP 40+</h1>
+      <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase">PRIJIT | TUESDAY</p>
+      <h1 class="font-display font-black text-3xl leading-none text-white" id="league-title">7SOC VIP 35UP 40+</h1>
     </div>
     <div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -168,7 +168,7 @@
   <!-- Header row -->
   <div class="flex items-center px-3 py-1 text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] mb-1">
     <span class="w-6 text-center">#</span>
-    <span class="flex-1 ml-2">TEAMS</span>
+    <span class="flex-1 ml-2">ทีม</span>
     <span class="w-7 text-center">MP</span>
     <span class="w-7 text-center">W</span>
     <span class="w-7 text-center">D</span>
@@ -183,10 +183,19 @@
 <!-- ║            TAB: MATCHES              ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
 <section id="tab-matches" class="tab-content hidden relative z-10 px-3 py-3">
+  <!-- Search bar -->
+  <div class="relative mb-3">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A6152]" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+    </svg>
+    <input id="match-search" type="text" placeholder="ค้นหาชื่อทีม..." oninput="renderMatches(allMatches)"
+      class="w-full bg-[#111916] border border-[#1E2B22] rounded-xl pl-8 pr-4 py-2 text-sm text-[#E8F5E9] placeholder-[#4A6152] focus:outline-none focus:border-green-500 transition"/>
+  </div>
+  <!-- Filter chips -->
   <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
-    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ALL PROGRAMS</button>
-    <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">UPCOMING</button>
-    <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">FULL-TIME</button>
+    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ทั้งหมด</button>
+    <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">กำลังจะมา</button>
+    <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">จบแล้ว</button>
   </div>
   <div id="matches-list" class="space-y-3"></div>
 </section>
@@ -223,7 +232,7 @@
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
 // ⚠️ เปลี่ยน URL นี้เป็น Web App URL ที่ได้จาก Deploy ใน Google Apps Script
-const API_URL = 'https://script.google.com/macros/s/AKfycbzOTGRg7u6ptw6RrPIAPdmyxGR2sTeoKfZByYH6lwgT_2zvTrgP4goUjYj4mlwzpPCohQ/exec';
+const API_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
 
 // ── STATE ────────────────────────────────────────────────────
 let allMatches   = [];
@@ -267,12 +276,11 @@ async function api(action, params = {}) {
   const res = await fetch(`${API_URL}?${qs}`);
   return res.json();
 }
-async function apiPost(body) {
-  const res = await fetch(API_URL, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(body),
-  });
+// ⚠️ ใช้ GET แทน POST เพื่อแก้ CORS redirect ของ GAS
+// GAS จะ redirect POST → GET อัตโนมัติ ทำให้ body payload หายไป
+async function apiWrite(action, data) {
+  const qs = new URLSearchParams({ action, data: JSON.stringify(data) });
+  const res = await fetch(`${API_URL}?${qs}`);
   return res.json();
 }
 
@@ -321,10 +329,21 @@ function renderStandings(data) {
 // ── RENDER: MATCHES ──────────────────────────────────────────
 function renderMatches(data) {
   const el = document.getElementById('matches-list');
+  const searchVal = (document.getElementById('match-search')?.value || '').trim().toLowerCase();
+
   let filtered = data;
   if (currentFilter === 'upcoming') filtered = data.filter(m => m.status !== 'FT' && m.status !== 'Finished');
   if (currentFilter === 'ft')       filtered = data.filter(m => m.status === 'FT' || m.status === 'Finished');
-  if (!filtered.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ไม่มีแมตช์</p>'; return; }
+
+  // กรองตาม search
+  if (searchVal) {
+    filtered = filtered.filter(m =>
+      m.home_team?.toLowerCase().includes(searchVal) ||
+      m.away_team?.toLowerCase().includes(searchVal)
+    );
+  }
+
+  if (!filtered.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ไม่พบแมตช์</p>'; return; }
 
   // Group by date
   const byDate = {};
@@ -586,7 +605,7 @@ async function addEvent(homeTeam, awayTeam) {
     match_id:    activeModal.match_id,
   };
 
-  const res = await apiPost({ action: 'saveEvent', data: ev });
+  const res = await apiWrite('saveEvent', ev);
   if (res.success) {
     showToast('บันทึก Event สำเร็จ ✅');
     // Reload events
@@ -614,10 +633,9 @@ async function saveScore() {
   const status = document.getElementById('match-status').value;
   if (hs === '' || as === '') { showToast('กรุณากรอกคะแนนก่อน'); return; }
 
-  const res = await apiPost({
-    action: 'saveMatchResult',
-    data: { match_id: activeModal.match_id, home_score: Number(hs), away_score: Number(as), status }
-  });
+  const res = await apiWrite('saveMatchResult',
+    { match_id: activeModal.match_id, home_score: Number(hs), away_score: Number(as), status }
+  );
 
   if (res.success) {
     // Update local state
