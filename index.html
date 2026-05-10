@@ -459,7 +459,7 @@ function renderModalContent(match, events) {
   const homePlayers = allPlayers.filter(p => p.team_name === match.home_team);
   const awayPlayers = allPlayers.filter(p => p.team_name === match.away_team);
 
-  const eventIcons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+  const eventIcons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴' };
 
   document.getElementById('modal-content').innerHTML = `
 
@@ -520,6 +520,7 @@ function renderModalContent(match, events) {
             <option value="assist">🅰 แอสซิสต์</option>
             <option value="yellow">🟨 ใบเหลือง</option>
             <option value="red">🟥 ใบแดง</option>
+            <option value="owngoal">🔴 OG (ประตูตัวเอง)</option>
           </select>
         </div>
         <div>
@@ -626,9 +627,15 @@ async function addEvent(homeTeam, awayTeam) {
       const scoreEl = document.getElementById(`${side}-score`);
       if (scoreEl) scoreEl.value = Number(scoreEl.value || 0) + 1;
     }
+    if (type === 'owngoal') {
+      // OG บวกสกอร์ให้ฝั่งตรงข้าม
+      const oppSide = selectedEvSide === 'home' ? 'away' : 'home';
+      const scoreEl = document.getElementById(`${oppSide}-score`);
+      if (scoreEl) scoreEl.value = Number(scoreEl.value || 0) + 1;
+    }
     // Reload events
     const events = await api('getEvents', { matchId: activeModal.match_id });
-    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴' };
     document.getElementById('event-log').innerHTML = events.map(e => `
       <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
         <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
@@ -716,7 +723,7 @@ async function deleteEventItem(matchId, playerName, type, time) {
   if (res.success) {
     showToast('ลบ Event สำเร็จ ✅');
     const events = await api('getEvents', { matchId });
-    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴' };
     document.getElementById('event-log').innerHTML = events.map(e => `
       <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
         <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
