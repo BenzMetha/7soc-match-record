@@ -502,6 +502,8 @@ function renderModalContent(match, events) {
             <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
             <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
             <span class="text-[10px] text-[#4A6152]">${ev.time ? ev.time+"'" : ''}</span>
+            <button onclick="deleteEventItem('${ev.match_id}','${ev.player_name}','${ev.type}','${ev.time}')"
+              class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
           </div>
         `).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
       </div>
@@ -618,6 +620,12 @@ async function addEvent(homeTeam, awayTeam) {
   const res = await apiWrite('saveEvent', ev);
   if (res.success) {
     showToast('บันทึก Event สำเร็จ ✅');
+    // Auto +1 score ถ้าเป็น goal
+    if (type === 'goal') {
+      const side = selectedEvSide === 'home' ? 'home' : 'away';
+      const scoreEl = document.getElementById(`${side}-score`);
+      if (scoreEl) scoreEl.value = Number(scoreEl.value || 0) + 1;
+    }
     // Reload events
     const events = await api('getEvents', { matchId: activeModal.match_id });
     const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
@@ -627,6 +635,8 @@ async function addEvent(homeTeam, awayTeam) {
         <span class="text-xs font-semibold flex-1">${e.player_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
+        <button onclick="deleteEventItem('${e.match_id}','${e.player_name}','${e.type}','${e.time}')"
+          class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
       </div>
     `).join('');
     document.getElementById('ev-time').value = '';
@@ -699,6 +709,27 @@ function showToast(msg) {
   t.textContent = msg;
   t.style.opacity = '1';
   setTimeout(() => { t.style.opacity = '0'; }, 2200);
+}
+
+async function deleteEventItem(matchId, playerName, type, time) {
+  const res = await apiWrite('deleteEvent', { match_id: matchId, player_name: playerName, type, time });
+  if (res.success) {
+    showToast('ลบ Event สำเร็จ ✅');
+    const events = await api('getEvents', { matchId });
+    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+    document.getElementById('event-log').innerHTML = events.map(e => `
+      <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
+        <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
+        <span class="text-xs font-semibold flex-1">${e.player_name}</span>
+        <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
+        <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
+        <button onclick="deleteEventItem('${e.match_id}','${e.player_name}','${e.type}','${e.time}')"
+          class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
+      </div>
+    `).join('') || '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
+  } else {
+    showToast('ลบไม่สำเร็จ ❌');
+  }
 }
 </script>
 </body>
