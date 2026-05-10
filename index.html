@@ -155,9 +155,9 @@
 
   <!-- Tabs -->
   <nav class="flex border-b border-[#1E2B22]">
-    <button class="tab-btn active" onclick="switchTab('standings')">STANDING</button>
-    <button class="tab-btn" onclick="switchTab('matches')">MATCHES</button>
-    <button class="tab-btn" onclick="switchTab('scorers')">STATS</button>
+    <button class="tab-btn active" onclick="switchTab('standings', this)">STANDING</button>
+    <button class="tab-btn" onclick="switchTab('matches', this)">MATCHES</button>
+    <button class="tab-btn" onclick="switchTab('scorers', this)">STATS</button>
   </nav>
 </header>
 
@@ -285,12 +285,12 @@ async function apiWrite(action, data) {
 }
 
 // ── TABS ─────────────────────────────────────────────────────
-function switchTab(name) {
+function switchTab(name, btn) {
   document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.remove('hidden');
   document.getElementById(`tab-${name}`).classList.add('fade-up');
-  event.currentTarget.classList.add('active');
+  btn.classList.add('active');
 }
 
 // ── SHIMMER ──────────────────────────────────────────────────
