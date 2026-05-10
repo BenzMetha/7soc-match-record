@@ -513,7 +513,7 @@ function renderModalContent(match, events) {
             <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
             <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
             <span class="text-[10px] text-[#4A6152]">${ev.time ? ev.time+"'" : ''}</span>
-            <button onclick="deleteEventItem('${ev.match_id}','${ev.player_name}','${ev.type}','${ev.time}')"
+            <button onclick="deleteEventItem('${ev.match_id}','${ev.player_id}','${ev.player_name}','${ev.type}','${ev.time}')"
               class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
           </div>
         `).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
@@ -578,7 +578,7 @@ function renderModalContent(match, events) {
 function playerChips(players, side) {
   if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-2 py-2">ไม่มีผู้เล่น</p>';
   return players.map(p => `
-    <div class="player-chip" id="chip-${side}-${p.player_name.replace(/\s/g,'_')}" onclick="selectPlayer('${side}','${p.player_name}')">
+    <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${p.player_name}','${p.player_id}')">
       ${p.player_image
         ? `<img src="${p.player_image}" class="w-7 h-7 rounded-full object-cover border border-[#1E2B22]"/>`
         : `<div class="w-7 h-7 rounded-full bg-[#1E2B22] flex items-center justify-center text-[10px] font-bold text-green-400">${initials(p.player_name)}</div>`}
@@ -590,8 +590,9 @@ function playerChips(players, side) {
   `).join('');
 }
 
-let selectedEvPlayer = null;
-let selectedEvSide   = 'home';
+let selectedEvPlayer   = null;
+let selectedEvPlayerId = null;
+let selectedEvSide     = 'home';
 
 function switchEvTab(side) {
   selectedEvSide = side;
@@ -606,11 +607,11 @@ function switchEvTab(side) {
   document.getElementById('ev-players-away').classList.toggle('hidden', side !== 'away');
 }
 
-function selectPlayer(side, name) {
-  // Deselect all chips
+function selectPlayer(side, name, pid) {
   document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
-  selectedEvPlayer = name;
-  const chipId = `chip-${side}-${name.replace(/\s/g,'_')}`;
+  selectedEvPlayer   = name;
+  selectedEvPlayerId = pid;
+  const chipId = `chip-${side}-${pid}`;
   const chip = document.getElementById(chipId);
   if (chip) chip.classList.add('selected');
 }
@@ -623,6 +624,7 @@ async function addEvent(homeTeam, awayTeam) {
 
   const ev = {
     type,
+    player_id:   selectedEvPlayerId,
     player_name: selectedEvPlayer,
     team_name:   teamName,
     time:        time || '',
@@ -653,7 +655,7 @@ async function addEvent(homeTeam, awayTeam) {
         <span class="text-xs font-semibold flex-1">${e.player_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
-        <button onclick="deleteEventItem('${e.match_id}','${e.player_name}','${e.type}','${e.time}')"
+        <button onclick="deleteEventItem('${e.match_id}','${e.player_id}','${e.player_name}','${e.type}','${e.time}')"
           class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
       </div>
     `).join('');
@@ -729,8 +731,8 @@ function showToast(msg) {
   setTimeout(() => { t.style.opacity = '0'; }, 2200);
 }
 
-async function deleteEventItem(matchId, playerName, type, time) {
-  const res = await apiWrite('deleteEvent', { match_id: matchId, player_name: playerName, type, time });
+async function deleteEventItem(matchId, playerId, playerName, type, time) {
+  const res = await apiWrite('deleteEvent', { match_id: matchId, player_id: playerId, player_name: playerName, type, time });
   if (res.success) {
     showToast('ลบ Event สำเร็จ ✅');
     const events = await api('getEvents', { matchId });
@@ -741,7 +743,7 @@ async function deleteEventItem(matchId, playerName, type, time) {
         <span class="text-xs font-semibold flex-1">${e.player_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
         <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
-        <button onclick="deleteEventItem('${e.match_id}','${e.player_name}','${e.type}','${e.time}')"
+        <button onclick="deleteEventItem('${e.match_id}','${e.player_id}','${e.player_name}','${e.type}','${e.time}')"
           class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
       </div>
     `).join('') || '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
