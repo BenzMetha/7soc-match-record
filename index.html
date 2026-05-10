@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Football League</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;900&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green:  #00C853;
+    --green2: #00E676;
+    --dark:   #0A0F0D;
+    --card:   #111916;
+    --border: #1E2B22;
+    --muted:  #4A6152;
+    --text:   #E8F5E9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Kanit', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .font-display { font-family: 'Barlow Condensed', sans-serif; }
+
+  /* ── Noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: .6;
+  }
+
+  /* ── Tabs ── */
+  .tab-btn {
+    flex: 1; padding: .6rem .5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: .95rem; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .tab-btn.active { color: var(--green); border-color: var(--green); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color .2s, transform .15s;
+  }
+  .card:active { transform: scale(.98); }
+
+  /* ── Standing row ── */
+  .stand-row { transition: background .15s; }
+  .stand-row:hover { background: rgba(0,200,83,.04); }
+
+  /* ── Badge ── */
+  .badge-g  { background: rgba(0,200,83,.15); color: var(--green2); }
+  .badge-y  { background: rgba(255,214,0,.12); color: #FFD600; }
+  .badge-r  { background: rgba(229,57,53,.15); color: #EF5350; }
+  .badge-a  { background: rgba(33,150,243,.12); color: #42A5F5; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+    z-index: 50; display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%; max-height: 92vh; overflow-y: auto;
+    transform: translateY(100%); transition: transform .3s cubic-bezier(.32,1,.4,1);
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+
+  /* ── Pulse dot ── */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .live-dot { animation: pulse 1.4s infinite; }
+
+  /* ── Shimmer loader ── */
+  @keyframes shimmer { from{background-position:-400px 0} to{background-position:400px 0} }
+  .shimmer {
+    background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
+    background-size: 800px 100%; animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── Player chip ── */
+  .player-chip {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .45rem .7rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+    background: var(--dark);
+  }
+  .player-chip.selected {
+    border-color: var(--green); background: rgba(0,200,83,.08);
+  }
+
+  /* ── Score input ── */
+  .score-input {
+    width: 56px; text-align: center;
+    background: var(--dark); border: 1px solid var(--border);
+    border-radius: 8px; padding: .4rem; color: var(--text);
+    font-size: 1.4rem; font-weight: 700;
+    -moz-appearance: textfield;
+  }
+  .score-input::-webkit-inner-spin-button,
+  .score-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .score-input:focus { outline: none; border-color: var(--green); }
+
+  /* ── Fade-in ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+  .fade-up { animation: fadeUp .35s ease forwards; }
+
+  /* Team logo fallback */
+  .logo-fallback {
+    display:flex; align-items:center; justify-content:center;
+    width:100%; height:100%;
+    font-family:'Barlow Condensed',sans-serif; font-weight:900;
+    font-size:1rem; color: var(--green);
+  }
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║              HEADER                  ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<header class="relative z-10 px-4 pt-5 pb-3">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase">Season 2025</p>
+      <h1 class="font-display font-black text-3xl leading-none text-white" id="league-title">FOOTBALL LEAGUE</h1>
+    </div>
+    <div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="flex border-b border-[#1E2B22]">
+    <button class="tab-btn active" onclick="switchTab('standings')">ตาราง</button>
+    <button class="tab-btn" onclick="switchTab('matches')">แมตช์</button>
+    <button class="tab-btn" onclick="switchTab('scorers')">สกอร์เรอร์</button>
+  </nav>
+</header>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            TAB: STANDINGS            ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="tab-standings" class="tab-content relative z-10 px-2 py-3 fade-up">
+  <!-- Header row -->
+  <div class="flex items-center px-3 py-1 text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] mb-1">
+    <span class="w-6 text-center">#</span>
+    <span class="flex-1 ml-2">ทีม</span>
+    <span class="w-7 text-center">MP</span>
+    <span class="w-7 text-center">W</span>
+    <span class="w-7 text-center">D</span>
+    <span class="w-7 text-center">L</span>
+    <span class="w-8 text-center">GD</span>
+    <span class="w-8 text-center font-black text-green-500">PTS</span>
+  </div>
+  <div id="standings-list" class="space-y-1"></div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            TAB: MATCHES              ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="tab-matches" class="tab-content hidden relative z-10 px-3 py-3">
+  <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
+    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ทั้งหมด</button>
+    <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">กำลังจะมา</button>
+    <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">จบแล้ว</button>
+  </div>
+  <div id="matches-list" class="space-y-3"></div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            TAB: TOP SCORERS          ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="tab-scorers" class="tab-content hidden relative z-10 px-3 py-3">
+  <div id="scorers-list" class="space-y-3"></div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            MATCH MODAL               ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<div id="match-modal" class="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <!-- Handle -->
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
+    </div>
+
+    <div id="modal-content" class="px-4 pb-6"></div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║           TOAST NOTIFICATION         ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full bg-green-500 text-black font-bold text-sm opacity-0 pointer-events-none transition-opacity duration-300 whitespace-nowrap"></div>
+
+<!-- ============================================================ -->
+<!--                        JAVASCRIPT                            -->
+<!-- ============================================================ -->
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+// ⚠️ เปลี่ยน URL นี้เป็น Web App URL ที่ได้จาก Deploy ใน Google Apps Script
+const API_URL = 'https://script.google.com/macros/s/AKfycbzOTGRg7u6ptw6RrPIAPdmyxGR2sTeoKfZByYH6lwgT_2zvTrgP4goUjYj4mlwzpPCohQ/exec';
+
+// ── STATE ────────────────────────────────────────────────────
+let allMatches   = [];
+let allPlayers   = [];
+let allTeams     = [];
+let currentFilter = 'all';
+let activeModal   = null;   // match object
+let selectedPlayers = {};   // { team: [player_name] }
+let pendingEvents   = [];   // events staged before save
+
+// ── INIT ─────────────────────────────────────────────────────
+window.onload = () => {
+  loadAll();
+};
+
+async function loadAll() {
+  showShimmer('standings-list', 8);
+  showShimmer('matches-list', 4);
+  showShimmer('scorers-list', 5);
+
+  const [standings, matches, players, teams, scorers] = await Promise.all([
+    api('getStandings'),
+    api('getMatches'),
+    api('getPlayers'),
+    api('getTeams'),
+    api('getTopScorers'),
+  ]);
+
+  allMatches = matches || [];
+  allPlayers = players || [];
+  allTeams   = teams   || [];
+
+  renderStandings(standings || []);
+  renderMatches(allMatches);
+  renderScorers(scorers || []);
+}
+
+// ── API HELPER ───────────────────────────────────────────────
+async function api(action, params = {}) {
+  const qs = new URLSearchParams({ action, ...params });
+  const res = await fetch(`${API_URL}?${qs}`);
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(API_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  });
+  return res.json();
+}
+
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.remove('hidden');
+  document.getElementById(`tab-${name}`).classList.add('fade-up');
+  event.currentTarget.classList.add('active');
+}
+
+// ── SHIMMER ──────────────────────────────────────────────────
+function showShimmer(containerId, count) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = Array(count).fill(0).map(() =>
+    `<div class="shimmer h-12 w-full mb-2"></div>`
+  ).join('');
+}
+
+// ── RENDER: STANDINGS ────────────────────────────────────────
+function renderStandings(data) {
+  const el = document.getElementById('standings-list');
+  if (!data.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>'; return; }
+
+  el.innerHTML = data.map((t, i) => {
+    const highlight = i === 0 ? 'border-l-2 border-green-500' : '';
+    const pos = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}`;
+    return `
+    <div class="stand-row card flex items-center px-3 py-2.5 ${highlight}">
+      <span class="w-6 text-center text-xs font-bold text-[#4A6152]">${pos}</span>
+      <div class="flex items-center gap-2 flex-1 ml-2 min-w-0">
+        ${logoImg(t.logo, t.team_name, 24)}
+        <span class="font-semibold text-sm truncate">${t.team_name}</span>
+      </div>
+      <span class="w-7 text-center text-xs text-[#4A6152]">${t.MP}</span>
+      <span class="w-7 text-center text-xs text-green-400">${t.W}</span>
+      <span class="w-7 text-center text-xs text-[#4A6152]">${t.D}</span>
+      <span class="w-7 text-center text-xs text-red-400">${t.L}</span>
+      <span class="w-8 text-center text-xs ${t.GD >= 0 ? 'text-green-400' : 'text-red-400'}">${t.GD > 0 ? '+' : ''}${t.GD}</span>
+      <span class="w-8 text-center text-sm font-black text-green-400">${t.PTS}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER: MATCHES ──────────────────────────────────────────
+function renderMatches(data) {
+  const el = document.getElementById('matches-list');
+  let filtered = data;
+  if (currentFilter === 'upcoming') filtered = data.filter(m => m.status !== 'FT' && m.status !== 'Finished');
+  if (currentFilter === 'ft')       filtered = data.filter(m => m.status === 'FT' || m.status === 'Finished');
+  if (!filtered.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ไม่มีแมตช์</p>'; return; }
+
+  // Group by date
+  const byDate = {};
+  filtered.forEach(m => {
+    const d = m.match_date || 'TBD';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(m);
+  });
+
+  el.innerHTML = Object.entries(byDate).map(([date, ms]) => `
+    <div>
+      <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">${formatDate(date)}</p>
+      <div class="space-y-2">
+        ${ms.map(m => matchCard(m)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function matchCard(m) {
+  const isFT = m.status === 'FT' || m.status === 'Finished';
+  const isLive = m.status === 'LIVE';
+  const statusBadge = isFT
+    ? `<span class="text-[10px] font-display font-bold text-[#4A6152] bg-[#1A2420] px-2 py-0.5 rounded">FT</span>`
+    : isLive
+      ? `<span class="flex items-center gap-1 text-[10px] font-display font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded">
+           <span class="live-dot w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>LIVE
+         </span>`
+      : `<span class="text-[10px] font-display font-bold text-[#4A6152]">${m.match_time || 'TBD'}</span>`;
+
+  return `
+  <div class="card p-3 cursor-pointer" onclick='openModal(${JSON.stringify(m)})'>
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[10px] text-[#4A6152] font-display">${m.venue || ''}</span>
+      ${statusBadge}
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 flex-1 min-w-0">
+        ${logoImg(teamLogo(m.home_team), m.home_team, 32)}
+        <span class="font-semibold text-sm truncate">${m.home_team}</span>
+      </div>
+      <div class="flex items-center gap-1.5 px-3 shrink-0">
+        ${isFT || isLive
+          ? `<span class="font-display font-black text-xl text-white">${m.home_score}</span>
+             <span class="font-display text-[#4A6152] font-bold">:</span>
+             <span class="font-display font-black text-xl text-white">${m.away_score}</span>`
+          : `<span class="font-display font-bold text-base text-[#2E3D34]">vs</span>`
+        }
+      </div>
+      <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
+        <span class="font-semibold text-sm truncate text-right">${m.away_team}</span>
+        ${logoImg(teamLogo(m.away_team), m.away_team, 32)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterMatches(f) {
+  currentFilter = f;
+  document.querySelectorAll('.match-filter-btn').forEach(b => {
+    b.classList.remove('active', 'border-green-500', 'text-green-400');
+    b.classList.add('border-[#1E2B22]', 'text-[#4A6152]');
+  });
+  const active = document.getElementById(`filter-${f}`);
+  active.classList.add('active', 'border-green-500', 'text-green-400');
+  active.classList.remove('border-[#1E2B22]', 'text-[#4A6152]');
+  renderMatches(allMatches);
+}
+
+// ── RENDER: SCORERS ───────────────────────────────────────────
+function renderScorers(data) {
+  const el = document.getElementById('scorers-list');
+  if (!data.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>'; return; }
+  el.innerHTML = data.map((p, i) => `
+    <div class="card flex items-center gap-3 p-3 fade-up" style="animation-delay:${i*40}ms">
+      <span class="font-display font-black text-2xl w-7 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
+      <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
+        ${p.player_image
+          ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
+          : `<div class="logo-fallback">${initials(p.player_name)}</div>`}
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm truncate">${p.player_name}</p>
+        <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        ${p.goals   > 0 ? `<span class="badge-g text-xs font-bold px-2 py-0.5 rounded-full">⚽ ${p.goals}</span>` : ''}
+        ${p.assists > 0 ? `<span class="badge-a text-xs font-bold px-2 py-0.5 rounded-full">🅰 ${p.assists}</span>` : ''}
+        ${p.yellow  > 0 ? `<span class="badge-y text-xs font-bold px-2 py-0.5 rounded-full">🟨 ${p.yellow}</span>` : ''}
+        ${p.red     > 0 ? `<span class="badge-r text-xs font-bold px-2 py-0.5 rounded-full">🟥 ${p.red}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+async function openModal(match) {
+  activeModal = match;
+  pendingEvents = [];
+  selectedPlayers = { [match.home_team]: [], [match.away_team]: [] };
+
+  const modal = document.getElementById('match-modal');
+  const content = document.getElementById('modal-content');
+
+  // Load existing events
+  const events = await api('getEvents', { matchId: match.match_id });
+  renderModalContent(match, events || []);
+  modal.classList.add('open');
+}
+
+function renderModalContent(match, events) {
+  const isFT = match.status === 'FT' || match.status === 'Finished';
+  const homePlayers = allPlayers.filter(p => p.team_name === match.home_team);
+  const awayPlayers = allPlayers.filter(p => p.team_name === match.away_team);
+
+  const eventIcons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+
+  document.getElementById('modal-content').innerHTML = `
+    <!-- Match Header -->
+    <div class="flex items-center justify-between mb-5 mt-1">
+      <div class="flex flex-col items-center gap-1 flex-1">
+        ${logoImg(teamLogo(match.home_team), match.home_team, 48)}
+        <span class="text-xs font-semibold text-center">${match.home_team}</span>
+      </div>
+      <div class="flex flex-col items-center px-4">
+        <div class="flex items-center gap-2">
+          <input type="number" id="home-score" class="score-input" value="${match.home_score ?? ''}" min="0" placeholder="0"/>
+          <span class="font-display font-black text-xl text-[#4A6152]">:</span>
+          <input type="number" id="away-score" class="score-input" value="${match.away_score ?? ''}" min="0" placeholder="0"/>
+        </div>
+        <select id="match-status" class="mt-2 text-xs bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-2 py-1 text-[#4A6152] focus:outline-none focus:border-green-500">
+          <option value="Upcoming" ${match.status==='Upcoming'?'selected':''}>กำลังจะมา</option>
+          <option value="LIVE"     ${match.status==='LIVE'    ?'selected':''}>LIVE</option>
+          <option value="FT"       ${(match.status==='FT'||match.status==='Finished')?'selected':''}>FT</option>
+        </select>
+      </div>
+      <div class="flex flex-col items-center gap-1 flex-1">
+        ${logoImg(teamLogo(match.away_team), match.away_team, 48)}
+        <span class="text-xs font-semibold text-center">${match.away_team}</span>
+      </div>
+    </div>
+
+    <!-- Save score button -->
+    <button onclick="saveScore()" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl mb-5 transition">
+      บันทึกผลการแข่งขัน
+    </button>
+
+    <!-- Events Log -->
+    <div class="mb-4">
+      <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2">Event Log</p>
+      <div id="event-log" class="space-y-1.5 mb-3">
+        ${events.length ? events.map(ev => `
+          <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
+            <span>${eventIcons[ev.type?.toLowerCase()] || '📋'}</span>
+            <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
+            <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
+            <span class="text-[10px] text-[#4A6152]">${ev.time ? ev.time+"'" : ''}</span>
+          </div>
+        `).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
+      </div>
+    </div>
+
+    <!-- Add Event -->
+    <div class="border-t border-[#1E2B22] pt-4">
+      <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-3">เพิ่ม Event</p>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div>
+          <label class="text-[10px] text-[#4A6152] mb-1 block">ประเภท</label>
+          <select id="ev-type" class="w-full bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+            <option value="goal">⚽ ประตู</option>
+            <option value="assist">🅰 แอสซิสต์</option>
+            <option value="yellow">🟨 ใบเหลือง</option>
+            <option value="red">🟥 ใบแดง</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] text-[#4A6152] mb-1 block">นาที</label>
+          <input type="number" id="ev-time" placeholder="เช่น 45" min="1" max="120"
+            class="w-full bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"/>
+        </div>
+      </div>
+
+      <!-- Player selector tabs -->
+      <div class="flex gap-2 mb-2">
+        <button id="ev-tab-home" class="ev-team-tab flex-1 text-xs font-display font-bold py-1.5 rounded-lg border border-green-500 text-green-400 bg-green-500/10" onclick="switchEvTab('home')">
+          ${match.home_team}
+        </button>
+        <button id="ev-tab-away" class="ev-team-tab flex-1 text-xs font-display font-bold py-1.5 rounded-lg border border-[#1E2B22] text-[#4A6152]" onclick="switchEvTab('away')">
+          ${match.away_team}
+        </button>
+      </div>
+
+      <div id="ev-players-home" class="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+        ${playerChips(homePlayers, 'home')}
+      </div>
+      <div id="ev-players-away" class="hidden grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+        ${playerChips(awayPlayers, 'away')}
+      </div>
+
+      <button onclick="addEvent('${match.home_team}','${match.away_team}')"
+        class="w-full mt-3 bg-[#1E2B22] hover:bg-green-500/20 border border-[#1E2B22] hover:border-green-500 text-green-400 font-bold font-display py-2.5 rounded-xl transition">
+        + เพิ่ม Event
+      </button>
+    </div>
+  `;
+}
+
+function playerChips(players, side) {
+  if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-2 py-2">ไม่มีผู้เล่น</p>';
+  return players.map(p => `
+    <div class="player-chip" id="chip-${side}-${p.player_name.replace(/\s/g,'_')}" onclick="selectPlayer('${side}','${p.player_name}')">
+      ${p.player_image
+        ? `<img src="${p.player_image}" class="w-7 h-7 rounded-full object-cover border border-[#1E2B22]"/>`
+        : `<div class="w-7 h-7 rounded-full bg-[#1E2B22] flex items-center justify-center text-[10px] font-bold text-green-400">${initials(p.player_name)}</div>`}
+      <div class="min-w-0">
+        <p class="text-xs font-semibold truncate">${p.player_name}</p>
+        <p class="text-[10px] text-[#4A6152]">#${p.player_number||'-'}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+let selectedEvPlayer = null;
+let selectedEvSide   = 'home';
+
+function switchEvTab(side) {
+  selectedEvSide = side;
+  selectedEvPlayer = null;
+  document.querySelectorAll('.ev-team-tab').forEach(b => {
+    b.classList.remove('border-green-500','text-green-400','bg-green-500/10');
+    b.classList.add('border-[#1E2B22]','text-[#4A6152]');
+  });
+  document.getElementById(`ev-tab-${side}`).classList.add('border-green-500','text-green-400','bg-green-500/10');
+  document.getElementById(`ev-tab-${side}`).classList.remove('border-[#1E2B22]','text-[#4A6152]');
+  document.getElementById('ev-players-home').classList.toggle('hidden', side !== 'home');
+  document.getElementById('ev-players-away').classList.toggle('hidden', side !== 'away');
+}
+
+function selectPlayer(side, name) {
+  // Deselect all chips
+  document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
+  selectedEvPlayer = name;
+  const chipId = `chip-${side}-${name.replace(/\s/g,'_')}`;
+  const chip = document.getElementById(chipId);
+  if (chip) chip.classList.add('selected');
+}
+
+async function addEvent(homeTeam, awayTeam) {
+  if (!selectedEvPlayer) { showToast('กรุณาเลือกผู้เล่นก่อน'); return; }
+  const type = document.getElementById('ev-type').value;
+  const time = document.getElementById('ev-time').value;
+  const teamName = selectedEvSide === 'home' ? homeTeam : awayTeam;
+
+  const ev = {
+    type,
+    player_name: selectedEvPlayer,
+    team_name:   teamName,
+    time:        time || '',
+    match_id:    activeModal.match_id,
+  };
+
+  const res = await apiPost({ action: 'saveEvent', data: ev });
+  if (res.success) {
+    showToast('บันทึก Event สำเร็จ ✅');
+    // Reload events
+    const events = await api('getEvents', { matchId: activeModal.match_id });
+    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥' };
+    document.getElementById('event-log').innerHTML = events.map(e => `
+      <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
+        <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
+        <span class="text-xs font-semibold flex-1">${e.player_name}</span>
+        <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
+        <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
+      </div>
+    `).join('');
+    document.getElementById('ev-time').value = '';
+    selectedEvPlayer = null;
+    document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
+  } else {
+    showToast('เกิดข้อผิดพลาด ❌');
+  }
+}
+
+async function saveScore() {
+  const hs = document.getElementById('home-score').value;
+  const as = document.getElementById('away-score').value;
+  const status = document.getElementById('match-status').value;
+  if (hs === '' || as === '') { showToast('กรุณากรอกคะแนนก่อน'); return; }
+
+  const res = await apiPost({
+    action: 'saveMatchResult',
+    data: { match_id: activeModal.match_id, home_score: Number(hs), away_score: Number(as), status }
+  });
+
+  if (res.success) {
+    // Update local state
+    const m = allMatches.find(m => String(m.match_id) === String(activeModal.match_id));
+    if (m) { m.home_score = hs; m.away_score = as; m.status = status; }
+    showToast('บันทึกผลสำเร็จ ✅');
+    closeModal();
+    // Refresh standings
+    const standings = await api('getStandings');
+    renderStandings(standings || []);
+    renderMatches(allMatches);
+  } else {
+    showToast('เกิดข้อผิดพลาด ❌');
+  }
+}
+
+function closeModal() {
+  document.getElementById('match-modal').classList.remove('open');
+  activeModal = null;
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('match-modal')) closeModal();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function teamLogo(teamName) {
+  const t = allTeams.find(t => t.team_name === teamName);
+  return t ? t.logo : '';
+}
+
+function logoImg(url, name, size) {
+  const s = `width:${size}px;height:${size}px;border-radius:${size/2}px;overflow:hidden;background:#0A0F0D;border:1px solid #1E2B22;flex-shrink:0;`;
+  if (url) return `<div style="${s}"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"/></div>`;
+  return `<div style="${s}display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${Math.round(size*.35)}px;color:#00C853;">${initials(name)}</div>`;
+}
+
+function initials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr || dateStr === 'TBD') return 'TBD';
+  try {
+    return new Date(dateStr).toLocaleDateString('th-TH', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+  } catch { return dateStr; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2200);
+}
+</script>
+</body>
+</html>
