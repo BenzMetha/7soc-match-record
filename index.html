@@ -210,7 +210,29 @@
 <!-- ╔══════════════════════════════════════╗ -->
 <!-- ║            MATCH MODAL               ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
-<div id="match-modal" class="modal-overlay" onclick="closeModalOutside(event)">
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║          STATS VIEW MORE MODAL       ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<div id="stats-modal" class="modal-overlay" onclick="closeStatsModal(event)">
+  <div class="modal-box">
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
+    </div>
+    <div id="stats-modal-content" class="px-4 pb-6"></div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║          PLAYER PROFILE MODAL        ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<div id="player-modal" class="modal-overlay" onclick="closePlayerModal(event)">
+  <div class="modal-box">
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
+    </div>
+    <div id="player-modal-content" class="px-4 pb-6"></div>
+  </div>
+</div>
   <div class="modal-box">
     <!-- Handle -->
     <div class="flex justify-center pt-3 pb-1">
@@ -418,36 +440,47 @@ function renderScorers(data) {
   const el = document.getElementById('scorers-list');
   if (!data.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>'; return; }
 
+  function playerRow(p, i, badgeClass, statKey) {
+    return `
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition"
+           onclick="openPlayerModal('${p.player_id || ''}')">
+        <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
+          ${p.player_image
+            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
+            : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">${p.player_name}</p>
+          <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
+        </div>
+        <span class="${badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[statKey]}</span>
+      </div>`;
+  }
+
   function groupSection(title, icon, players, statKey, badgeClass) {
     const filtered = players.filter(p => p[statKey] > 0).sort((a,b) => b[statKey]-a[statKey]);
     if (!filtered.length) return '';
+    const top10  = filtered.slice(0, 10);
+    const hasMore = filtered.length > 10;
     return `
       <div class="mb-5">
         <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">${icon} ${title}</p>
-        ${filtered.map((p, i) => `
-          <div class="card flex items-center gap-3 p-3 mb-1">
-            <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
-            <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
-              ${p.player_image
-                ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-                : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-sm truncate">${p.player_name}</p>
-              <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
-            </div>
-            <span class="${badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[statKey]}</span>
-          </div>
-        `).join('')}
+        ${top10.map((p, i) => playerRow(p, i, badgeClass, statKey)).join('')}
+        ${hasMore ? `
+          <button onclick="openStatsModal('${title}','${icon}',${JSON.stringify(filtered).replace(/'/g,"\\'")},'${statKey}','${badgeClass}')"
+            class="w-full mt-1 py-2 text-xs font-display font-bold text-[#4A6152] hover:text-green-400 border border-[#1E2B22] hover:border-green-500/30 rounded-xl transition">
+            VIEW MORE (${filtered.length - 10} คนที่เหลือ)
+          </button>` : ''}
       </div>`;
   }
 
   el.innerHTML =
-    groupSection('Top Scorer',    '⚽', data, 'goals',   'badge-g') +
-    groupSection('Top Assist',    '🅰', data, 'assists', 'badge-a') +
-    groupSection('ใบเหลือง',      '🟨', data, 'yellow',  'badge-y') +
-    groupSection('ใบแดง',         '🟥', data, 'red',     'badge-r') +
-    groupSection('Own Goal',      '🔴', data, 'owngoal', 'badge-r');
+    groupSection('Top Scorer', '⚽', data, 'goals',   'badge-g') +
+    groupSection('Top Assist', '🅰', data, 'assists', 'badge-a') +
+    groupSection('ใบเหลือง',   '🟨', data, 'yellow',  'badge-y') +
+    groupSection('ใบแดง',      '🟥', data, 'red',     'badge-r') +
+    groupSection('Own Goal',   '🔴', data, 'owngoal', 'badge-r');
 }
 
 // ── MODAL ─────────────────────────────────────────────────────
@@ -750,6 +783,90 @@ async function deleteEventItem(matchId, playerId, playerName, type, time) {
   } else {
     showToast('ลบไม่สำเร็จ ❌');
   }
+}
+
+// ── STATS VIEW MORE MODAL ────────────────────────────────────
+function openStatsModal(title, icon, players, statKey, badgeClass) {
+  const el = document.getElementById('stats-modal-content');
+  el.innerHTML = `
+    <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-3 mt-2">${icon} ${title} — ทั้งหมด</p>
+    ${players.map((p, i) => `
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition"
+           onclick="closeStatsModalFn(); openPlayerModal('${p.player_id || ''}')">
+        <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
+          ${p.player_image
+            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
+            : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">${p.player_name}</p>
+          <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
+        </div>
+        <span class="${badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[statKey]}</span>
+      </div>
+    `).join('')}
+  `;
+  document.getElementById('stats-modal').classList.add('open');
+}
+function closeStatsModalFn() {
+  document.getElementById('stats-modal').classList.remove('open');
+}
+function closeStatsModal(e) {
+  if (e.target === document.getElementById('stats-modal')) closeStatsModalFn();
+}
+
+// ── PLAYER PROFILE MODAL ─────────────────────────────────────
+function openPlayerModal(playerId) {
+  const p = allPlayers.find(p => p.player_id === playerId);
+  if (!p) return;
+
+  // หา stats จาก scorers ที่โหลดมาแล้ว — ต้องเรียก api ใหม่
+  api('getTopScorers').then(scorers => {
+    const s = (scorers || []).find(x => x.player_id === playerId) || {};
+    document.getElementById('player-modal-content').innerHTML = `
+      <div class="flex flex-col items-center pt-4 pb-2">
+        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
+          ${p.player_image
+            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
+            : `<div class="logo-fallback text-2xl">${initials(p.player_name)}</div>`}
+        </div>
+        <h2 class="font-display font-black text-2xl text-white">${p.player_name}</h2>
+        <p class="text-sm text-[#4A6152] mb-1">${p.team_name}</p>
+        ${p.player_number ? `<p class="text-xs text-green-400 font-bold">#${p.player_number}</p>` : ''}
+        ${p.player_position ? `<span class="mt-1 text-[10px] font-display font-bold px-3 py-0.5 rounded-full bg-green-500/10 text-green-400">${p.player_position}</span>` : ''}
+      </div>
+      <div class="grid grid-cols-3 gap-2 mt-3 mb-4">
+        <div class="card flex flex-col items-center py-3">
+          <span class="text-2xl font-black text-green-400">${s.goals || 0}</span>
+          <span class="text-[10px] text-[#4A6152] mt-0.5">⚽ ประตู</span>
+        </div>
+        <div class="card flex flex-col items-center py-3">
+          <span class="text-2xl font-black text-blue-400">${s.assists || 0}</span>
+          <span class="text-[10px] text-[#4A6152] mt-0.5">🅰 แอสซิสต์</span>
+        </div>
+        <div class="card flex flex-col items-center py-3">
+          <span class="text-2xl font-black text-red-400">${s.owngoal || 0}</span>
+          <span class="text-[10px] text-[#4A6152] mt-0.5">🔴 OG</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="card flex flex-col items-center py-3">
+          <span class="text-2xl font-black text-yellow-400">${s.yellow || 0}</span>
+          <span class="text-[10px] text-[#4A6152] mt-0.5">🟨 ใบเหลือง</span>
+        </div>
+        <div class="card flex flex-col items-center py-3">
+          <span class="text-2xl font-black text-red-600">${s.red || 0}</span>
+          <span class="text-[10px] text-[#4A6152] mt-0.5">🟥 ใบแดง</span>
+        </div>
+      </div>
+    `;
+    document.getElementById('player-modal').classList.add('open');
+  });
+}
+function closePlayerModal(e) {
+  if (e.target === document.getElementById('player-modal'))
+    document.getElementById('player-modal').classList.remove('open');
 }
 </script>
 </body>
