@@ -591,10 +591,10 @@ function renderModalContent(match, events) {
         </button>
       </div>
 
-      <div id="ev-players-home" class="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+      <div id="ev-players-home" class="grid grid-cols-1 gap-1.5 max-h-56 overflow-y-auto">
         ${playerChips(homePlayers, 'home')}
       </div>
-      <div id="ev-players-away" class="hidden grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+      <div id="ev-players-away" class="hidden grid grid-cols-1 gap-1.5 max-h-56 overflow-y-auto">
         ${playerChips(awayPlayers, 'away')}
       </div>
 
@@ -620,11 +620,11 @@ function playerChips(players, side) {
   return players.map(p => `
     <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${p.player_name}','${p.player_id}')">
       ${p.player_image
-        ? `<img src="${p.player_image}" class="w-7 h-7 rounded-full object-cover border border-[#1E2B22]"/>`
-        : `<div class="w-7 h-7 rounded-full bg-[#1E2B22] flex items-center justify-center text-[10px] font-bold text-green-400">${initials(p.player_name)}</div>`}
+        ? `<img src="${p.player_image}" class="w-12 h-12 rounded-full object-cover border-2 border-[#1E2B22]"/>`
+        : `<div class="w-12 h-12 rounded-full bg-[#1E2B22] flex items-center justify-center text-sm font-bold text-green-400">${initials(p.player_name)}</div>`}
       <div class="min-w-0">
-        <p class="text-xs font-semibold truncate">${p.player_name}</p>
-        <p class="text-[10px] text-[#4A6152]">#${p.player_number||'-'}</p>
+        <p class="text-sm font-semibold truncate">${p.player_name}</p>
+        <p class="text-xs text-[#4A6152]">#${p.player_number||'-'}</p>
       </div>
     </div>
   `).join('');
