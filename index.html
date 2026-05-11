@@ -260,6 +260,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyak4t2zMp7OED8eYMSZbTM
 let allMatches   = [];
 let allPlayers   = [];
 let allTeams     = [];
+let allScorers   = [];
 let currentFilter = 'all';
 let activeModal   = null;   // match object
 let selectedPlayers = {};   // { team: [player_name] }
@@ -286,6 +287,7 @@ async function loadAll() {
   allMatches = matches || [];
   allPlayers = players || [];
   allTeams   = teams   || [];
+  allScorers = scorers || [];   // ← เพิ่มบรรทัดนี้
 
   renderStandings(standings || []);
   renderMatches(allMatches);
@@ -443,7 +445,7 @@ function renderScorers(data) {
   function playerRow(p, i, badgeClass, statKey) {
     return `
       <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition"
-           onclick="openPlayerModal('${p.player_id || ''}')">
+           onclick="openPlayerModal('${p.player_id}')">
         <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
         <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
           ${p.player_image
@@ -750,10 +752,14 @@ function initials(name) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
 }
 
+// ของใหม่ — วางแทน
 function formatDate(dateStr) {
   if (!dateStr || dateStr === 'TBD') return 'TBD';
   try {
-    return new Date(dateStr).toLocaleDateString('th-TH', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('th-TH', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
   } catch { return dateStr; }
 }
 
@@ -817,13 +823,24 @@ function closeStatsModal(e) {
 }
 
 // ── PLAYER PROFILE MODAL ─────────────────────────────────────
+// ของใหม่
 function openPlayerModal(playerId) {
-  const p = allPlayers.find(p => p.player_id === playerId);
-  if (!p) return;
+  if (!playerId || playerId === 'undefined') { showToast('ไม่พบ ID ผู้เล่น'); return; }
+  console.log('playerId:', playerId, typeof playerId);           // ← เพิ่มบรรทัดนี้
+  console.log('allPlayers ids:', allPlayers.map(p => p.player_id)); // ← เพิ่มบรรทัดนี้
+  const p = allPlayers.find(p => String(p.player_id) === String(playerId));
+  if (!p) {
+    showToast('ไม่พบข้อมูลผู้เล่น');
+    return;
+  }
+
 
   // หา stats จาก scorers ที่โหลดมาแล้ว — ต้องเรียก api ใหม่
-  api('getTopScorers').then(scorers => {
-    const s = (scorers || []).find(x => x.player_id === playerId) || {};
+  // ของใหม่ — ใช้ cache แทน เรียก API อีกครั้งเฉพาะถ้ายังไม่มีข้อมูล
+  const scorerData = allScorers.length ? Promise.resolve(allScorers) : api('getTopScorers');
+  scorerData.then(scorers => {
+    if (!allScorers.length) allScorers = scorers || [];
+    const s = allScorers.find(x => String(x.player_id) === String(playerId)) || {};
     document.getElementById('player-modal-content').innerHTML = `
       <div class="flex flex-col items-center pt-4 pb-2">
         <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
