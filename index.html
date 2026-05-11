@@ -261,6 +261,7 @@ let allMatches   = [];
 let allPlayers   = [];
 let allTeams     = [];
 let allScorers   = [];
+let statsCache   = {};
 let currentFilter = 'all';
 let activeModal   = null;   // match object
 let selectedPlayers = {};   // { team: [player_name] }
@@ -465,12 +466,14 @@ function renderScorers(data) {
     if (!filtered.length) return '';
     const top10  = filtered.slice(0, 10);
     const hasMore = filtered.length > 10;
+    const cacheKey = `stats_${statKey}`;
+    statsCache[cacheKey] = { title, icon, players: filtered, statKey, badgeClass };
     return `
       <div class="mb-5">
         <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">${icon} ${title}</p>
         ${top10.map((p, i) => playerRow(p, i, badgeClass, statKey)).join('')}
         ${hasMore ? `
-          <button onclick="openStatsModal('${title}','${icon}',${JSON.stringify(filtered).replace(/'/g,"\\'")},'${statKey}','${badgeClass}')"
+          <button onclick="openStatsModalFromCache('${cacheKey}')"
             class="w-full mt-1 py-2 text-xs font-display font-bold text-[#4A6152] hover:text-green-400 border border-[#1E2B22] hover:border-green-500/30 rounded-xl transition">
             VIEW MORE (${filtered.length - 10} คนที่เหลือ)
           </button>` : ''}
@@ -797,6 +800,13 @@ async function deleteEventItem(matchId, playerId, playerName, type, time) {
 }
 
 // ── STATS VIEW MORE MODAL ────────────────────────────────────
+// ── ฟังก์ชันใหม่ — เรียก openStatsModal จาก cache ──────────
+function openStatsModalFromCache(cacheKey) {
+  const c = statsCache[cacheKey];
+  if (!c) { showToast('ไม่พบข้อมูล'); return; }
+  openStatsModal(c.title, c.icon, c.players, c.statKey, c.badgeClass);
+}
+
 function openStatsModal(title, icon, players, statKey, badgeClass) {
   const el = document.getElementById('stats-modal-content');
   el.innerHTML = `
