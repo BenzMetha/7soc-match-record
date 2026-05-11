@@ -444,8 +444,8 @@ function renderScorers(data) {
 
   function playerRow(p, i, badgeClass, statKey) {
     return `
-      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition"
-           onclick="openPlayerModal('${p.player_id}')">
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn"
+     data-pid="${p.player_id}">
         <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
         <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
           ${p.player_image
@@ -483,7 +483,12 @@ function renderScorers(data) {
     groupSection('ใบเหลือง',   '🟨', data, 'yellow',  'badge-y') +
     groupSection('ใบแดง',      '🟥', data, 'red',     'badge-r') +
     groupSection('Own Goal',   '🔴', data, 'owngoal', 'badge-r');
-}
+
+  // ← ย้ายมาอยู่ตรงนี้ ก่อน } ปิด renderScorers
+  el.querySelectorAll('.player-row-btn').forEach(btn => {
+    btn.addEventListener('click', () => openPlayerModal(btn.dataset.pid));
+  });
+}   // ← } ปิด renderScorers
 
 // ── MODAL ─────────────────────────────────────────────────────
 async function openModal(match) {
@@ -797,8 +802,8 @@ function openStatsModal(title, icon, players, statKey, badgeClass) {
   el.innerHTML = `
     <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-3 mt-2">${icon} ${title} — ทั้งหมด</p>
     ${players.map((p, i) => `
-      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition"
-           onclick="closeStatsModalFn(); openPlayerModal('${p.player_id || ''}')">
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn"
+           data-pid="${p.player_id || ''}">
         <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
         <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
           ${p.player_image
@@ -814,7 +819,14 @@ function openStatsModal(title, icon, players, statKey, badgeClass) {
     `).join('')}
   `;
   document.getElementById('stats-modal').classList.add('open');
+  el.querySelectorAll('.player-row-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeStatsModalFn();
+      openPlayerModal(btn.dataset.pid);
+    });
+  });
 }
+  
 function closeStatsModalFn() {
   document.getElementById('stats-modal').classList.remove('open');
 }
@@ -826,8 +838,6 @@ function closeStatsModal(e) {
 // ของใหม่
 function openPlayerModal(playerId) {
   if (!playerId || playerId === 'undefined') { showToast('ไม่พบ ID ผู้เล่น'); return; }
-  console.log('playerId:', playerId, typeof playerId);           // ← เพิ่มบรรทัดนี้
-  console.log('allPlayers ids:', allPlayers.map(p => p.player_id)); // ← เพิ่มบรรทัดนี้
   const p = allPlayers.find(p => String(p.player_id) === String(playerId));
   if (!p) {
     showToast('ไม่พบข้อมูลผู้เล่น');
