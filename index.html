@@ -210,6 +210,15 @@
 <!-- ╔══════════════════════════════════════╗ -->
 <!-- ║            MATCH MODAL               ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
+<div id="match-modal" class="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
+    </div>
+    <div id="modal-content" class="px-4 pb-6"></div>
+  </div>
+</div>
+
 <!-- ╔══════════════════════════════════════╗ -->
 <!-- ║          STATS VIEW MORE MODAL       ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
@@ -231,15 +240,6 @@
       <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
     </div>
     <div id="player-modal-content" class="px-4 pb-6"></div>
-  </div>
-</div>
-  <div class="modal-box">
-    <!-- Handle -->
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
-
-    <div id="modal-content" class="px-4 pb-6"></div>
   </div>
 </div>
 
