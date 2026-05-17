@@ -98,17 +98,26 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* ── Player chip ── */
+  /* ── Player chip (3-col square card) ── */
   .player-chip {
-    display: flex; align-items: center; gap: .5rem;
-    padding: .45rem .7rem;
-    border: 1px solid var(--border); border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: .4rem; text-align: center;
+    border: 2px solid var(--border); border-radius: 10px;
     cursor: pointer; transition: border-color .15s, background .15s;
     background: var(--dark);
   }
   .player-chip.selected {
     border-color: var(--green); background: rgba(0,200,83,.08);
   }
+  .player-chip .chip-img {
+    width: 100%; aspect-ratio: 1/1;
+    border-radius: 6px; overflow: hidden;
+    background: var(--card); border: 1px solid var(--border);
+    margin-bottom: .35rem;
+  }
+  .player-chip .chip-img img { width:100%; height:100%; object-fit:cover; }
+  .player-chip .chip-name { font-size:.7rem; font-weight:600; line-height:1.2; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .player-chip .chip-num  { font-size:.65rem; color: var(--muted); }
 
   /* ── Score input ── */
   .score-input {
@@ -140,7 +149,7 @@
 <!-- ╔══════════════════════════════════════╗ -->
 <!-- ║              HEADER                  ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
-<header class="relative z-10 px-4 pt-5 pb-3">
+<header class="sticky top-0 z-20 px-4 pt-5 pb-3" style="background:var(--dark);border-bottom:1px solid var(--border)">
   <div class="flex items-center justify-between mb-4">
     <div>
       <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase">PRIJIT | TUESDAY</p>
@@ -632,16 +641,16 @@ function renderModalContent(match, events) {
 }
 
 function playerChips(players, side) {
-  if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-2 py-2">ไม่มีผู้เล่น</p>';
+  if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-3 py-2">ไม่มีผู้เล่น</p>';
   return players.map(p => `
     <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${p.player_name}','${p.player_id}')">
-      ${p.player_image
-        ? `<img src="${p.player_image}" class="w-12 h-12 rounded-full object-cover border-2 border-[#1E2B22]"/>`
-        : `<div class="w-12 h-12 rounded-full bg-[#1E2B22] flex items-center justify-center text-sm font-bold text-green-400">${initials(p.player_name)}</div>`}
-      <div class="min-w-0">
-        <p class="text-sm font-semibold truncate">${p.player_name}</p>
-        <p class="text-xs text-[#4A6152]">#${p.player_number||'-'}</p>
+      <div class="chip-img">
+        ${p.player_image
+          ? `<img src="${p.player_image}"/>`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:#00C853">${initials(p.player_name)}</div>`}
       </div>
+      <p class="chip-name">${p.player_name}</p>
+      <p class="chip-num">#${p.player_number||'-'}</p>
     </div>
   `).join('');
 }
@@ -806,10 +815,10 @@ function openEventFormModal() {
         ${match.away_team}
       </button>
     </div>
-    <div id="ev-players-home" class="grid grid-cols-1 gap-1.5 max-h-52 overflow-y-auto mb-3">
+    <div id="ev-players-home" class="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto mb-3">
       ${playerChips(homePlayers, 'home')}
     </div>
-    <div id="ev-players-away" class="hidden grid grid-cols-1 gap-1.5 max-h-52 overflow-y-auto mb-3">
+    <div id="ev-players-away" class="hidden grid grid-cols-3 gap-2 max-h-64 overflow-y-auto mb-3">
       ${playerChips(awayPlayers, 'away')}
     </div>
     <button id="btn-confirm-event"
@@ -1033,33 +1042,34 @@ function openTeamModal(teamName) {
       </div>
     </div>
     <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">⚽ ผู้เล่น (${players.length} คน)</p>
-    <div class="space-y-1">
+    <div class="grid grid-cols-3 gap-2">
       ${players.length ? players.map(p => {
         const s = statsMap[p.player_id] || {};
         const goals   = s.goals   || 0;
         const assists = s.assists || 0;
         const yellow  = s.yellow  || 0;
         const red     = s.red     || 0;
+        const saves   = s.saves   || 0;
+        const hasStat = goals || assists || yellow || red || saves;
         return `
-        <div class="card flex items-center gap-3 p-3 cursor-pointer hover:border-green-500/30 transition"
+        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition"
              onclick="document.getElementById('team-modal').classList.remove('open'); openPlayerModal('${p.player_id}')">
-          <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
+          <div class="w-full aspect-square rounded-lg overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] mb-1.5">
             ${p.player_image
               ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-              : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-sm truncate">${p.player_name}</p>
-            <p class="text-[11px] text-[#4A6152]">#${p.player_number||'-'} ${p.player_position||''}</p>
-          </div>
-          <div class="flex gap-2 text-[11px] font-bold shrink-0">
-            ${goals   ? `<span class="badge-g px-2 py-0.5 rounded-full">⚽${goals}</span>`   : ''}
-            ${assists ? `<span class="badge-a px-2 py-0.5 rounded-full">🅰${assists}</span>` : ''}
-            ${yellow  ? `<span class="badge-y px-2 py-0.5 rounded-full">🟨${yellow}</span>`  : ''}
-            ${red     ? `<span class="badge-r px-2 py-0.5 rounded-full">🟥${red}</span>`     : ''}
-          </div>
+          <p class="text-xs font-semibold leading-tight truncate w-full">${p.player_name}</p>
+          <p class="text-[10px] text-[#4A6152] mb-1">#${p.player_number||'-'}${p.player_position ? ' · '+p.player_position : ''}</p>
+          ${hasStat ? `<div class="flex flex-wrap gap-1 justify-center">
+            ${goals   ? '<span class="badge-g text-[10px] font-bold px-1.5 py-0.5 rounded-full">⚽'+goals+'</span>'   : ''}
+            ${assists ? '<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🅰'+assists+'</span>' : ''}
+            ${saves   ? '<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🧤'+saves+'</span>'   : ''}
+            ${yellow  ? '<span class="badge-y text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟨'+yellow+'</span>'  : ''}
+            ${red     ? '<span class="badge-r text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟥'+red+'</span>'     : ''}
+          </div>` : ''}
         </div>`;
-      }).join('') : '<p class="text-xs text-[#4A6152] py-2">ยังไม่มีผู้เล่น</p>'}
+      }).join('') : '<p class="text-xs text-[#4A6152] col-span-3 py-2">ยังไม่มีผู้เล่น</p>'}
     </div>
   `;
   document.getElementById('team-modal').classList.add('open');
