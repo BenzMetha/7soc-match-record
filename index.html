@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>7SOC VIP 35UP 40+ วันอังคาร</title>
+<title>Football League Hub</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;900&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet"/>
 <style>
@@ -34,6 +34,12 @@
     pointer-events: none; z-index: 0; opacity: .6;
   }
 
+  /* ── Screen transitions ── */
+  .screen-enter { animation: screenEnter .28s ease forwards; }
+  @keyframes screenEnter { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:none} }
+  .screen-back  { animation: screenBack  .28s ease forwards; }
+  @keyframes screenBack  { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:none} }
+
   /* ── Tabs ── */
   .tab-btn {
     flex: 1; padding: .6rem .5rem;
@@ -53,6 +59,13 @@
     transition: border-color .2s, transform .15s;
   }
   .card:active { transform: scale(.98); }
+
+  /* ── League card (home screen) ── */
+  .league-card {
+    display: flex; align-items: center; gap: 1rem; padding: 1rem;
+    cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .league-card:active { background: rgba(0,200,83,.04); transform: scale(.99); }
 
   /* ── Standing row ── */
   .stand-row { transition: background .15s; }
@@ -147,22 +160,58 @@
 <body>
 
 <!-- ╔══════════════════════════════════════╗ -->
-<!-- ║              HEADER                  ║ -->
+<!-- ║           SCREEN: HOME               ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
-<header class="sticky top-0 z-20 px-4 pt-5 pb-3" style="background:var(--dark);border-bottom:1px solid var(--border)">
-  <div class="flex items-center justify-between mb-4">
-    <div>
-      <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase">PRIJIT | TUESDAY</p>
-      <h1 class="font-display font-black text-3xl leading-none text-white" id="league-title">7SOC VIP 35UP 40+</h1>
+<div id="screen-home" class="relative z-10 min-h-screen">
+
+  <header class="px-5 pt-10 pb-6">
+    <div class="flex items-end justify-between">
+      <div>
+        <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase mb-1">FOOTBALL</p>
+        <h1 class="font-display font-black leading-none text-white" style="font-size:2.8rem">LEAGUE<br><span class="text-green-500">HUB</span></h1>
+      </div>
+      <div class="w-14 h-14 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+          <path d="M2 12h20"/>
+        </svg>
+      </div>
     </div>
-    <div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
-      </svg>
-    </div>
+    <p class="text-sm text-[#4A6152] mt-3">เลือก League ที่ต้องการจัดการ</p>
+  </header>
+
+  <div class="px-3 pb-10">
+    <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">ALL LEAGUES</p>
+    <div id="leagues-list" class="space-y-2"></div>
   </div>
 
-  <!-- Tabs -->
+</div>
+
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║          SCREEN: LEAGUE              ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<div id="screen-league" class="hidden">
+
+<!-- ── Header ── -->
+<header class="sticky top-0 z-20 px-4 pt-5 pb-3" style="background:var(--dark);border-bottom:1px solid var(--border)">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3 min-w-0">
+      <button onclick="goHome()"
+        class="w-9 h-9 rounded-full bg-[#1E2B22] flex items-center justify-center text-[#4A6152] hover:text-green-400 transition shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+      </button>
+      <div class="min-w-0">
+        <p class="text-xs text-green-500 font-display font-bold tracking-widest uppercase" id="league-subtitle">TUESDAY</p>
+        <h1 class="font-display font-black text-2xl leading-none text-white truncate" id="league-title">LEAGUE</h1>
+      </div>
+    </div>
+    <div id="league-logo-header"
+      class="w-10 h-10 rounded-full overflow-hidden bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400 shrink-0">
+    </div>
+  </div>
   <nav class="flex border-b border-[#1E2B22]">
     <button class="tab-btn active" onclick="switchTab('standings', this)">STANDING</button>
     <button class="tab-btn" onclick="switchTab('matches', this)">MATCHES</button>
@@ -170,11 +219,8 @@
   </nav>
 </header>
 
-<!-- ╔══════════════════════════════════════╗ -->
-<!-- ║            TAB: STANDINGS            ║ -->
-<!-- ╚══════════════════════════════════════╝ -->
+<!-- ── Tab: Standings ── -->
 <section id="tab-standings" class="tab-content relative z-10 px-2 py-3 fade-up">
-  <!-- Header row -->
   <div class="flex items-center px-3 py-1 text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] mb-1">
     <span class="w-6 text-center">#</span>
     <span class="flex-1 ml-2">TEAMS</span>
@@ -188,11 +234,8 @@
   <div id="standings-list" class="space-y-1"></div>
 </section>
 
-<!-- ╔══════════════════════════════════════╗ -->
-<!-- ║            TAB: MATCHES              ║ -->
-<!-- ╚══════════════════════════════════════╝ -->
+<!-- ── Tab: Matches ── -->
 <section id="tab-matches" class="tab-content hidden relative z-10 px-3 py-3">
-  <!-- Search bar -->
   <div class="relative mb-3">
     <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A6152]" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
       <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
@@ -200,9 +243,8 @@
     <input id="match-search" type="text" placeholder="ค้นหาชื่อทีม..." oninput="renderMatches(allMatches)"
       class="w-full bg-[#111916] border border-[#1E2B22] rounded-xl pl-8 pr-4 py-2 text-sm text-[#E8F5E9] placeholder-[#4A6152] focus:outline-none focus:border-green-500 transition"/>
   </div>
-  <!-- Filter chips -->
   <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
-    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ALL PROGRAMS</button>
+    <button id="filter-all"      class="match-filter-btn active text-xs font-display font-bold px-3 py-1 rounded-full border border-green-500 text-green-400 whitespace-nowrap" onclick="filterMatches('all')">ALL</button>
     <button id="filter-today"    class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('today')">TODAY</button>
     <button id="filter-upcoming" class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('upcoming')">UPCOMING</button>
     <button id="filter-ft"       class="match-filter-btn text-xs font-display font-bold px-3 py-1 rounded-full border border-[#1E2B22] text-[#4A6152] whitespace-nowrap" onclick="filterMatches('ft')">FULL-TIME</button>
@@ -210,21 +252,19 @@
   <div id="matches-list" class="space-y-3"></div>
 </section>
 
-<!-- ╔══════════════════════════════════════╗ -->
-<!-- ║            TAB: TOP SCORERS          ║ -->
-<!-- ╚══════════════════════════════════════╝ -->
+<!-- ── Tab: Scorers / Stats ── -->
 <section id="tab-scorers" class="tab-content hidden relative z-10 px-3 py-3">
   <div id="scorers-list" class="space-y-3"></div>
 </section>
+
+</div> <!-- /screen-league -->
 
 <!-- ╔══════════════════════════════════════╗ -->
 <!-- ║            MATCH MODAL               ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
 <div id="match-modal" class="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal-box">
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div>
     <div id="modal-content" class="px-4 pb-6"></div>
   </div>
 </div>
@@ -234,9 +274,7 @@
 <!-- ╚══════════════════════════════════════╝ -->
 <div id="stats-modal" class="modal-overlay" onclick="closeStatsModal(event)">
   <div class="modal-box">
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div>
     <div id="stats-modal-content" class="px-4 pb-6"></div>
   </div>
 </div>
@@ -246,33 +284,27 @@
 <!-- ╚══════════════════════════════════════╝ -->
 <div id="player-modal" class="modal-overlay" onclick="closePlayerModal(event)">
   <div class="modal-box">
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div>
     <div id="player-modal-content" class="px-4 pb-6"></div>
   </div>
 </div>
 
 <!-- ╔══════════════════════════════════════╗ -->
-<!-- ║          EVENT FORM MODAL           ║ -->
+<!-- ║          EVENT FORM MODAL            ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
 <div id="event-form-modal" class="modal-overlay" onclick="closeEventFormModal(event)" style="z-index:60">
   <div class="modal-box">
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div>
     <div id="event-form-content" class="px-4 pb-6"></div>
   </div>
 </div>
 
 <!-- ╔══════════════════════════════════════╗ -->
-<!-- ║            TEAM MODAL               ║ -->
+<!-- ║            TEAM MODAL                ║ -->
 <!-- ╚══════════════════════════════════════╝ -->
 <div id="team-modal" class="modal-overlay" onclick="closeTeamModal(event)">
   <div class="modal-box">
-    <div class="flex justify-center pt-3 pb-1">
-      <div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div>
-    </div>
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div>
     <div id="team-modal-content" class="px-4 pb-6"></div>
   </div>
 </div>
@@ -287,27 +319,120 @@
 <!-- ============================================================ -->
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-// ⚠️ เปลี่ยน URL นี้เป็น Web App URL ที่ได้จาก Deploy ใน Google Apps Script
 const API_URL = 'https://script.google.com/macros/s/AKfycbyak4t2zMp7OED8eYMSZbTMFPywu-vPM2bURQCCYZytCZFpbkdKrntSkPSCRIZvmEbANA/exec';
 
 // ── STATE ────────────────────────────────────────────────────
-let allMatches   = [];
-let allPlayers   = [];
-let allTeams     = [];
-let allScorers   = [];
-let statsCache   = {};
+let allMatches    = [];
+let allPlayers    = [];
+let allTeams      = [];
+let allScorers    = [];
+let statsCache    = {};
 let currentFilter = 'all';
-let activeModal   = null;   // match object
-let selectedPlayers = {};   // { team: [player_name] }
-let pendingEvents   = [];   // events staged before save
+let activeModal   = null;
+let selectedPlayers = {};
+let pendingEvents   = [];
+let currentLeague   = null;   // ← league object จากหน้า Home
 
 // ── INIT ─────────────────────────────────────────────────────
-window.onload = () => {
-  loadAll();
-};
+window.onload = () => loadLeagues();
 
-const CACHE_KEY = '7soc_data';
+// ── CACHE KEY (per-league) ───────────────────────────────────
+function getCacheKey(leagueId) { return `7soc_data_${leagueId}`; }
 
+// ============================================================
+// HOME SCREEN
+// ============================================================
+async function loadLeagues() {
+  showLeagueShimmer();
+  const leagues = await api('getLeagues');
+  renderLeagues(leagues || []);
+}
+
+function showLeagueShimmer() {
+  document.getElementById('leagues-list').innerHTML = [1,2,3].map(() => `
+    <div class="card flex items-center gap-4 p-4">
+      <div class="shimmer w-14 h-14 rounded-xl shrink-0"></div>
+      <div class="flex-1 space-y-2">
+        <div class="shimmer h-2.5 w-20 rounded"></div>
+        <div class="shimmer h-4 w-40 rounded"></div>
+        <div class="shimmer h-2.5 w-28 rounded"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderLeagues(leagues) {
+  const el = document.getElementById('leagues-list');
+  if (!leagues.length) {
+    el.innerHTML = `<p class="text-center text-[#4A6152] py-12 text-sm leading-relaxed">ยังไม่มี League<br><span class="text-xs">เพิ่มข้อมูลใน Sheet "Leagues"</span></p>`;
+    return;
+  }
+  el.innerHTML = leagues.map(lg => `
+    <div class="card league-card" onclick='selectLeague(${JSON.stringify(lg)})'>
+      <div class="w-14 h-14 rounded-xl overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] shrink-0">
+        ${lg.league_logo
+          ? `<img src="${lg.league_logo}" class="w-full h-full object-cover"/>`
+          : `<div class="logo-fallback text-xl">${initials(lg.league_name)}</div>`}
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] font-display font-bold tracking-widest text-green-500 uppercase mb-0.5">${lg.league_day || ''}</p>
+        <h3 class="font-display font-black text-lg text-white leading-tight truncate">${lg.league_name}</h3>
+        <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+          ${lg.teams_count  ? `<span class="text-[11px] text-[#4A6152]">⚽ ${lg.teams_count} ทีม</span>` : ''}
+          ${lg.matches_count ? `<span class="text-[11px] text-[#4A6152]">· ${lg.matches_count} นัด</span>` : ''}
+          ${lg.description  ? `<span class="text-[11px] text-[#4A6152] truncate">· ${lg.description}</span>` : ''}
+        </div>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#2E3D34" viewBox="0 0 16 16" class="shrink-0">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+      </svg>
+    </div>`).join('');
+}
+
+function selectLeague(lg) {
+  currentLeague = lg;
+
+  // Update header
+  document.getElementById('league-subtitle').textContent = lg.league_subtitle || lg.league_day || '';
+  document.getElementById('league-title').textContent    = lg.league_name;
+
+  // League logo in header
+  const logoEl = document.getElementById('league-logo-header');
+  if (lg.league_logo) {
+    logoEl.innerHTML = `<img src="${lg.league_logo}" class="w-full h-full object-cover"/>`;
+  } else {
+    logoEl.innerHTML = `<span class="font-display font-black text-sm">${initials(lg.league_name)}</span>`;
+  }
+
+  // Reset tabs → Standings
+  document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-standings').classList.remove('hidden');
+  document.querySelector('.tab-btn').classList.add('active');
+
+  // Switch screens
+  document.getElementById('screen-home').classList.add('hidden');
+  const ls = document.getElementById('screen-league');
+  ls.classList.remove('hidden');
+  ls.classList.add('screen-enter');
+  setTimeout(() => ls.classList.remove('screen-enter'), 320);
+
+  loadAll(lg.league_id);
+}
+
+function goHome() {
+  currentLeague = null;
+  allMatches = []; allPlayers = []; allTeams = []; allScorers = [];
+
+  document.getElementById('screen-league').classList.add('hidden');
+  const hs = document.getElementById('screen-home');
+  hs.classList.remove('hidden');
+  hs.classList.add('screen-back');
+  setTimeout(() => hs.classList.remove('screen-back'), 320);
+}
+
+// ============================================================
+// DATA LOADING
+// ============================================================
 function applyData(d) {
   allMatches = d.matches  || [];
   allPlayers = d.players  || [];
@@ -318,9 +443,9 @@ function applyData(d) {
   renderScorers(allScorers);
 }
 
-async function loadAll() {
-  // แสดง cache ก่อนทันที (ไม่ต้องรอ shimmer)
-  const raw = localStorage.getItem(CACHE_KEY);
+async function loadAll(leagueId) {
+  const cacheKey = getCacheKey(leagueId);
+  const raw = localStorage.getItem(cacheKey);
   if (raw) {
     try { applyData(JSON.parse(raw)); } catch(e) {}
   } else {
@@ -329,24 +454,22 @@ async function loadAll() {
     showShimmer('scorers-list', 5);
   }
 
-  // fetch ข้อมูลใหม่ 1 call แล้ว update
-  const d = await api('getInitialData');
+  const d = await api('getInitialData', { leagueId });
   if (d && !d.error) {
     applyData(d);
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)); } catch(e) {}
+    try { localStorage.setItem(cacheKey, JSON.stringify(d)); } catch(e) {}
   }
 }
 
-// ── API HELPER ───────────────────────────────────────────────
+// ── API HELPERS ──────────────────────────────────────────────
 async function api(action, params = {}) {
   const qs = new URLSearchParams({ action, ...params });
   const res = await fetch(`${API_URL}?${qs}`);
   return res.json();
 }
-// ⚠️ ใช้ GET แทน POST เพื่อแก้ CORS redirect ของ GAS
-// GAS จะ redirect POST → GET อัตโนมัติ ทำให้ body payload หายไป
 async function apiWrite(action, data) {
-  const qs = new URLSearchParams({ action, data: JSON.stringify(data) });
+  const payload = { ...data, league_id: currentLeague?.league_id };
+  const qs = new URLSearchParams({ action, data: JSON.stringify(payload) });
   const res = await fetch(`${API_URL}?${qs}`);
   return res.json();
 }
@@ -362,22 +485,21 @@ function switchTab(name, btn) {
 
 // ── SHIMMER ──────────────────────────────────────────────────
 function showShimmer(containerId, count) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = Array(count).fill(0).map(() =>
-    `<div class="shimmer h-12 w-full mb-2"></div>`
-  ).join('');
+  document.getElementById(containerId).innerHTML =
+    Array(count).fill(0).map(() => `<div class="shimmer h-12 w-full mb-2"></div>`).join('');
 }
 
-// ── RENDER: STANDINGS ────────────────────────────────────────
+// ============================================================
+// RENDER: STANDINGS
+// ============================================================
 function renderStandings(data) {
   const el = document.getElementById('standings-list');
   if (!data.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>'; return; }
-
   el.innerHTML = data.map((t, i) => {
     const highlight = i === 0 ? 'border-l-2 border-green-500' : '';
     const pos = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}`;
     return `
-    <div class="stand-row card flex items-center px-3 py-2.5 cursor-pointer ${highlight}" onclick="openTeamModal('${t.team_name.replace(/'/g, "\\'")}')">
+    <div class="stand-row card flex items-center px-3 py-2.5 cursor-pointer ${highlight}" onclick="openTeamModal('${t.team_name.replace(/'/g,"\\'")}')">
       <span class="w-6 text-center text-xs font-bold text-[#4A6152]">${pos}</span>
       <div class="flex items-center gap-2 flex-1 ml-2 min-w-0">
         ${logoImg(t.logo, t.team_name, 24)}
@@ -393,7 +515,9 @@ function renderStandings(data) {
   }).join('');
 }
 
-// ── RENDER: MATCHES ──────────────────────────────────────────
+// ============================================================
+// RENDER: MATCHES
+// ============================================================
 function renderMatches(data) {
   const el = document.getElementById('matches-list');
   const searchVal = (document.getElementById('match-search')?.value || '').trim().toLowerCase();
@@ -407,18 +531,11 @@ function renderMatches(data) {
   if (currentFilter === 'today')    filtered = data.filter(m => m.match_date === todayStr);
   if (currentFilter === 'upcoming') filtered = data.filter(m => m.status !== 'FT' && m.status !== 'Finished');
   if (currentFilter === 'ft')       filtered = data.filter(m => m.status === 'FT' || m.status === 'Finished');
-
-  // กรองตาม search
-  if (searchVal) {
-    filtered = filtered.filter(m =>
-      m.home_team?.toLowerCase().includes(searchVal) ||
-      m.away_team?.toLowerCase().includes(searchVal)
-    );
-  }
+  if (searchVal) filtered = filtered.filter(m =>
+    m.home_team?.toLowerCase().includes(searchVal) || m.away_team?.toLowerCase().includes(searchVal));
 
   if (!filtered.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ไม่พบแมตช์</p>'; return; }
 
-  // Group by date
   const byDate = {};
   filtered.forEach(m => {
     const d = m.match_date || 'TBD';
@@ -429,24 +546,19 @@ function renderMatches(data) {
   el.innerHTML = Object.entries(byDate).map(([date, ms]) => `
     <div>
       <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">${formatDate(date)}</p>
-      <div class="space-y-2">
-        ${ms.map(m => matchCard(m)).join('')}
-      </div>
-    </div>
-  `).join('');
+      <div class="space-y-2">${ms.map(m => matchCard(m)).join('')}</div>
+    </div>`).join('');
 }
 
 function matchCard(m) {
-  const isFT = m.status === 'FT' || m.status === 'Finished';
-  const isLive = m.status === 'LIVE';
+  const isFT   = m.status === 'FT' || m.status === 'Finished';
+  const isLive  = m.status === 'LIVE';
   const statusBadge = isFT
     ? `<span class="text-[10px] font-display font-bold text-[#4A6152] bg-[#1A2420] px-2 py-0.5 rounded">FT</span>`
     : isLive
       ? `<span class="flex items-center gap-1 text-[10px] font-display font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded">
-           <span class="live-dot w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>LIVE
-         </span>`
+           <span class="live-dot w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>LIVE</span>`
       : `<span class="text-[10px] font-display font-bold text-[#4A6152]">${m.match_time || 'TBD'}</span>`;
-
   return `
   <div class="card p-3 cursor-pointer" onclick='openModal(${JSON.stringify(m)})'>
     <div class="flex items-center justify-between mb-2">
@@ -463,8 +575,7 @@ function matchCard(m) {
           ? `<span class="font-display font-black text-xl text-white">${m.home_score}</span>
              <span class="font-display text-[#4A6152] font-bold">:</span>
              <span class="font-display font-black text-xl text-white">${m.away_score}</span>`
-          : `<span class="font-display font-bold text-base text-[#2E3D34]">vs</span>`
-        }
+          : `<span class="font-display font-bold text-base text-[#2E3D34]">vs</span>`}
       </div>
       <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
         <span class="font-semibold text-sm truncate text-right">${m.away_team}</span>
@@ -498,20 +609,19 @@ function filterMatches(f) {
   renderMatches(allMatches);
 }
 
-// ── RENDER: SCORERS ───────────────────────────────────────────
+// ============================================================
+// RENDER: SCORERS / STATS
+// ============================================================
 function renderScorers(data) {
   const el = document.getElementById('scorers-list');
   if (!data.length) { el.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>'; return; }
 
   function playerRow(p, i, badgeClass, statKey) {
     return `
-      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn"
-     data-pid="${p.player_id}">
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn" data-pid="${p.player_id}">
         <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
         <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
-          ${p.player_image
-            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-            : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+          ${p.player_image ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>` : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
         </div>
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-sm truncate">${p.player_name}</p>
@@ -525,14 +635,13 @@ function renderScorers(data) {
     const filtered = players.filter(p => p[statKey] > 0).sort((a,b) => b[statKey]-a[statKey]);
     if (!filtered.length) return '';
     const top10  = filtered.slice(0, 10);
-    const hasMore = filtered.length > 10;
     const cacheKey = `stats_${statKey}`;
     statsCache[cacheKey] = { title, icon, players: filtered, statKey, badgeClass };
     return `
       <div class="mb-5">
         <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">${icon} ${title}</p>
         ${top10.map((p, i) => playerRow(p, i, badgeClass, statKey)).join('')}
-        ${hasMore ? `
+        ${filtered.length > 10 ? `
           <button onclick="openStatsModalFromCache('${cacheKey}')"
             class="w-full mt-1 py-2 text-xs font-display font-bold text-[#4A6152] hover:text-green-400 border border-[#1E2B22] hover:border-green-500/30 rounded-xl transition">
             VIEW MORE (${filtered.length - 10} คนที่เหลือ)
@@ -548,37 +657,26 @@ function renderScorers(data) {
     groupSection('ใบแดง',      '🟥', data, 'red',     'badge-r') +
     groupSection('Own Goal',   '🔴', data, 'owngoal', 'badge-r');
 
-  // ← ย้ายมาอยู่ตรงนี้ ก่อน } ปิด renderScorers
   el.querySelectorAll('.player-row-btn').forEach(btn => {
     btn.addEventListener('click', () => openPlayerModal(btn.dataset.pid));
   });
-}   // ← } ปิด renderScorers
+}
 
-// ── MODAL ─────────────────────────────────────────────────────
+// ============================================================
+// MATCH MODAL
+// ============================================================
 async function openModal(match) {
   activeModal = match;
   pendingEvents = [];
   selectedPlayers = { [match.home_team]: [], [match.away_team]: [] };
-
-  const modal = document.getElementById('match-modal');
-  const content = document.getElementById('modal-content');
-
-  // Load existing events
   const events = await api('getEvents', { matchId: match.match_id });
   renderModalContent(match, events || []);
-  modal.classList.add('open');
+  document.getElementById('match-modal').classList.add('open');
 }
 
 function renderModalContent(match, events) {
-  const isFT = match.status === 'FT' || match.status === 'Finished';
-  const homePlayers = allPlayers.filter(p => p.team_name === match.home_team);
-  const awayPlayers = allPlayers.filter(p => p.team_name === match.away_team);
-
-  const eventIcons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴' };
-
+  const eventIcons = { goal:'⚽', assist:'🅰', yellow:'🟨', red:'🟥', owngoal:'🔴', save:'🧤' };
   document.getElementById('modal-content').innerHTML = `
-
-    <!-- Match Header -->
     <div class="flex items-center justify-between mb-5 mt-1">
       <div class="flex flex-col items-center gap-1 flex-1">
         ${logoImg(teamLogo(match.home_team), match.home_team, 48)}
@@ -592,7 +690,7 @@ function renderModalContent(match, events) {
         </div>
         <select id="match-status" class="mt-2 text-xs bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-2 py-1 text-[#4A6152] focus:outline-none focus:border-green-500">
           <option value="Upcoming" ${match.status==='Upcoming'?'selected':''}>กำลังจะมา</option>
-          <option value="LIVE"     ${match.status==='LIVE'    ?'selected':''}>LIVE</option>
+          <option value="LIVE"     ${match.status==='LIVE'?'selected':''}>LIVE</option>
           <option value="FT"       ${(match.status==='FT'||match.status==='Finished')?'selected':''}>FT</option>
         </select>
         <div class="mt-2 flex items-center gap-1">
@@ -611,144 +709,51 @@ function renderModalContent(match, events) {
       </div>
     </div>
 
-    <!-- Save score button -->
     <button onclick="saveScore()" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl mb-5 transition">
       บันทึกผลการแข่งขัน
     </button>
 
-    <!-- Events Log -->
     <div class="mb-4">
       <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2">Event Log</p>
       <div id="event-log" class="space-y-1.5 mb-3">
-        ${events.length ? events.map(ev => `
-          <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
-            <span>${eventIcons[ev.type?.toLowerCase()] || '📋'}</span>
-            <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
-            <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
-            <span class="text-[10px] text-[#4A6152]">${ev.time ? ev.time+"'" : ''}</span>
-            <button onclick="deleteEventItem('${ev.match_id}','${ev.player_id}','${ev.player_name}','${ev.type}','${ev.time}')"
-              class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
-          </div>
-        `).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
+        ${events.length ? events.map(ev => eventRow(ev)).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
       </div>
     </div>
 
     <button onclick="openEventFormModal()"
       class="w-full mt-2 bg-[#1E2B22] hover:bg-green-500/20 border border-[#1E2B22] hover:border-green-500 text-green-400 font-bold font-display py-2.5 rounded-xl transition">
       + เพิ่ม Event
-    </button>
-  `;
+    </button>`;
 }
 
-function playerChips(players, side) {
-  if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-3 py-2">ไม่มีผู้เล่น</p>';
-  return players.map(p => `
-    <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${p.player_name}','${p.player_id}')">
-      <div class="chip-img">
-        ${p.player_image
-          ? `<img src="${p.player_image}"/>`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:#00C853">${initials(p.player_name)}</div>`}
-      </div>
-      <p class="chip-name">${p.player_name}</p>
-      <p class="chip-num">#${p.player_number||'-'}</p>
-    </div>
-  `).join('');
-}
-
-let selectedEvPlayer   = null;
-let selectedEvPlayerId = null;
-let selectedEvSide     = 'home';
-
-function switchEvTab(side) {
-  selectedEvSide = side;
-  selectedEvPlayer = null;
-  document.querySelectorAll('.ev-team-tab').forEach(b => {
-    b.classList.remove('border-green-500','text-green-400','bg-green-500/10');
-    b.classList.add('border-[#1E2B22]','text-[#4A6152]');
-  });
-  document.getElementById(`ev-tab-${side}`).classList.add('border-green-500','text-green-400','bg-green-500/10');
-  document.getElementById(`ev-tab-${side}`).classList.remove('border-[#1E2B22]','text-[#4A6152]');
-  document.getElementById('ev-players-home').classList.toggle('hidden', side !== 'home');
-  document.getElementById('ev-players-away').classList.toggle('hidden', side !== 'away');
-}
-
-function selectPlayer(side, name, pid) {
-  document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
-  selectedEvPlayer   = name;
-  selectedEvPlayerId = pid;
-  const chipId = `chip-${side}-${pid}`;
-  const chip = document.getElementById(chipId);
-  if (chip) chip.classList.add('selected');
-}
-
-async function addEvent(homeTeam, awayTeam) {
-  if (!selectedEvPlayer) { showToast('กรุณาเลือกผู้เล่นก่อน'); return; }
-  const type = document.getElementById('ev-type').value;
-  const time = document.getElementById('ev-time').value;
-  const teamName = selectedEvSide === 'home' ? homeTeam : awayTeam;
-
-  const ev = {
-    type,
-    player_id:   selectedEvPlayerId,
-    player_name: selectedEvPlayer,
-    team_name:   teamName,
-    time:        time || '',
-    match_id:    activeModal.match_id,
-  };
-
-  const res = await apiWrite('saveEvent', ev);
-  if (res.success) {
-    // ปิด event form modal
-    document.getElementById('event-form-modal').classList.remove('open');
-    showToast('บันทึก Event สำเร็จ ✅');
-    // Auto +1 score ถ้าเป็น goal
-    if (type === 'goal') {
-      const scoreEl = document.getElementById(`${selectedEvSide}-score`);
-      if (scoreEl) scoreEl.value = Number(scoreEl.value || 0) + 1;
-    }
-    if (type === 'owngoal') {
-      const oppSide = selectedEvSide === 'home' ? 'away' : 'home';
-      const scoreEl = document.getElementById(`${oppSide}-score`);
-      if (scoreEl) scoreEl.value = Number(scoreEl.value || 0) + 1;
-    }
-    // Reload events in match modal
-    const events = await api('getEvents', { matchId: activeModal.match_id });
-    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴', save: '🧤' };
-    document.getElementById('event-log').innerHTML = events.map(e => `
-      <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
-        <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
-        <span class="text-xs font-semibold flex-1">${e.player_name}</span>
-        <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
-        <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
-        <button onclick="deleteEventItem('${e.match_id}','${e.player_id}','${e.player_name}','${e.type}','${e.time}')"
-          class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
-      </div>
-    `).join('');
-    selectedEvPlayer = null;
-  } else {
-    showToast('เกิดข้อผิดพลาด ❌');
-  }
+function eventRow(ev) {
+  const icons = { goal:'⚽', assist:'🅰', yellow:'🟨', red:'🟥', owngoal:'🔴', save:'🧤' };
+  return `
+    <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
+      <span>${icons[ev.type?.toLowerCase()]||'📋'}</span>
+      <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
+      <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
+      <span class="text-[10px] text-[#4A6152]">${ev.time ? ev.time+"'" : ''}</span>
+      <button onclick="deleteEventItem('${ev.match_id}','${ev.player_id}','${ev.player_name}','${ev.type}','${ev.time}')"
+        class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
+    </div>`;
 }
 
 async function saveScore() {
-  const hs = document.getElementById('home-score').value;
-  const as = document.getElementById('away-score').value;
+  const hs     = document.getElementById('home-score').value;
+  const as     = document.getElementById('away-score').value;
   const status = document.getElementById('match-status').value;
-  const hp = document.getElementById('home-possession')?.value;
-  const ap = document.getElementById('away-possession')?.value;
+  const hp     = document.getElementById('home-possession')?.value;
+  const ap     = document.getElementById('away-possession')?.value;
   if (hs === '' || as === '') { showToast('กรุณากรอกคะแนนก่อน'); return; }
 
   const res = await apiWrite('saveMatchResult', {
     match_id: activeModal.match_id,
-    home_score: Number(hs),
-    away_score: Number(as),
-    status,
-    home_possession: hp,
-    away_possession: ap,
+    home_score: Number(hs), away_score: Number(as), status,
+    home_possession: hp, away_possession: ap,
   });
 
   if (res.success) {
-    // Update local state
     const m = allMatches.find(m => String(m.match_id) === String(activeModal.match_id));
     if (m) {
       m.home_score = Number(hs); m.away_score = Number(as); m.status = status;
@@ -757,12 +762,12 @@ async function saveScore() {
     }
     showToast('บันทึกผลสำเร็จ ✅');
     closeModal();
-    // Invalidate localStorage cache แล้ว refresh standings (ใช้ได้ทั้ง LIVE และ FT)
-    localStorage.removeItem(CACHE_KEY);
-    const freshData = await api('getInitialData');
+    const cacheKey = getCacheKey(currentLeague?.league_id);
+    localStorage.removeItem(cacheKey);
+    const freshData = await api('getInitialData', { leagueId: currentLeague?.league_id });
     if (freshData && !freshData.error) {
       applyData(freshData);
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify(freshData)); } catch(e) {}
+      try { localStorage.setItem(cacheKey, JSON.stringify(freshData)); } catch(e) {}
     }
   } else {
     showToast('เกิดข้อผิดพลาด ❌');
@@ -777,15 +782,19 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('match-modal')) closeModal();
 }
 
-// ── EVENT FORM MODAL ──────────────────────────────────────────
+// ============================================================
+// EVENT FORM MODAL
+// ============================================================
+let selectedEvPlayer   = null;
+let selectedEvPlayerId = null;
+let selectedEvSide     = 'home';
+
 function openEventFormModal() {
   const match = activeModal;
   if (!match) return;
   const homePlayers = allPlayers.filter(p => p.team_name === match.home_team);
   const awayPlayers = allPlayers.filter(p => p.team_name === match.away_team);
-  selectedEvPlayer = null;
-  selectedEvPlayerId = null;
-  selectedEvSide = 'home';
+  selectedEvPlayer = null; selectedEvPlayerId = null; selectedEvSide = 'home';
 
   document.getElementById('event-form-content').innerHTML = `
     <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-4 mt-2">เพิ่ม Event</p>
@@ -824,14 +833,87 @@ function openEventFormModal() {
     <button id="btn-confirm-event"
       class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl transition">
       บันทึก Event
-    </button>
-  `;
+    </button>`;
 
   document.getElementById('btn-confirm-event').addEventListener('click', () => {
     addEvent(match.home_team, match.away_team);
   });
-
   document.getElementById('event-form-modal').classList.add('open');
+}
+
+function switchEvTab(side) {
+  selectedEvSide = side; selectedEvPlayer = null;
+  document.querySelectorAll('.ev-team-tab').forEach(b => {
+    b.classList.remove('border-green-500','text-green-400','bg-green-500/10');
+    b.classList.add('border-[#1E2B22]','text-[#4A6152]');
+  });
+  document.getElementById(`ev-tab-${side}`).classList.add('border-green-500','text-green-400','bg-green-500/10');
+  document.getElementById(`ev-tab-${side}`).classList.remove('border-[#1E2B22]','text-[#4A6152]');
+  document.getElementById('ev-players-home').classList.toggle('hidden', side !== 'home');
+  document.getElementById('ev-players-away').classList.toggle('hidden', side !== 'away');
+}
+
+function selectPlayer(side, name, pid) {
+  document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
+  selectedEvPlayer = name; selectedEvPlayerId = pid;
+  const chip = document.getElementById(`chip-${side}-${pid}`);
+  if (chip) chip.classList.add('selected');
+}
+
+async function addEvent(homeTeam, awayTeam) {
+  if (!selectedEvPlayer) { showToast('กรุณาเลือกผู้เล่นก่อน'); return; }
+  const type     = document.getElementById('ev-type').value;
+  const time     = document.getElementById('ev-time').value;
+  const teamName = selectedEvSide === 'home' ? homeTeam : awayTeam;
+
+  const ev = {
+    type, player_id: selectedEvPlayerId, player_name: selectedEvPlayer,
+    team_name: teamName, time: time || '', match_id: activeModal.match_id,
+  };
+  const res = await apiWrite('saveEvent', ev);
+  if (res.success) {
+    document.getElementById('event-form-modal').classList.remove('open');
+    showToast('บันทึก Event สำเร็จ ✅');
+    if (type === 'goal') {
+      const sc = document.getElementById(`${selectedEvSide}-score`);
+      if (sc) sc.value = Number(sc.value || 0) + 1;
+    }
+    if (type === 'owngoal') {
+      const opp = selectedEvSide === 'home' ? 'away' : 'home';
+      const sc = document.getElementById(`${opp}-score`);
+      if (sc) sc.value = Number(sc.value || 0) + 1;
+    }
+    const events = await api('getEvents', { matchId: activeModal.match_id });
+    document.getElementById('event-log').innerHTML = events.map(e => eventRow(e)).join('') || '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
+    selectedEvPlayer = null;
+  } else {
+    showToast('เกิดข้อผิดพลาด ❌');
+  }
+}
+
+function playerChips(players, side) {
+  if (!players.length) return '<p class="text-xs text-[#4A6152] col-span-3 py-2">ไม่มีผู้เล่น</p>';
+  return players.map(p => `
+    <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${p.player_name}','${p.player_id}')">
+      <div class="chip-img">
+        ${p.player_image
+          ? `<img src="${p.player_image}"/>`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:#00C853">${initials(p.player_name)}</div>`}
+      </div>
+      <p class="chip-name">${p.player_name}</p>
+      <p class="chip-num">#${p.player_number||'-'}</p>
+    </div>`).join('');
+}
+
+async function deleteEventItem(matchId, playerId, playerName, type, time) {
+  const res = await apiWrite('deleteEvent', { match_id: matchId, player_id: playerId, player_name: playerName, type, time });
+  if (res.success) {
+    showToast('ลบ Event สำเร็จ ✅');
+    const events = await api('getEvents', { matchId });
+    document.getElementById('event-log').innerHTML = events.map(e => eventRow(e)).join('') || '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
+  } else {
+    showToast('ลบไม่สำเร็จ ❌');
+  }
 }
 
 function closeEventFormModal(e) {
@@ -839,7 +921,164 @@ function closeEventFormModal(e) {
     document.getElementById('event-form-modal').classList.remove('open');
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
+// ============================================================
+// STATS VIEW MORE MODAL
+// ============================================================
+function openStatsModalFromCache(cacheKey) {
+  const c = statsCache[cacheKey];
+  if (!c) { showToast('ไม่พบข้อมูล'); return; }
+  openStatsModal(c.title, c.icon, c.players, c.statKey, c.badgeClass);
+}
+
+function openStatsModal(title, icon, players, statKey, badgeClass) {
+  const el = document.getElementById('stats-modal-content');
+  el.innerHTML = `
+    <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-3 mt-2">${icon} ${title} — ทั้งหมด</p>
+    ${players.map((p, i) => `
+      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn" data-pid="${p.player_id||''}">
+        <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
+          ${p.player_image ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>` : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">${p.player_name}</p>
+          <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
+        </div>
+        <span class="${badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[statKey]}</span>
+      </div>`).join('')}`;
+  document.getElementById('stats-modal').classList.add('open');
+  el.querySelectorAll('.player-row-btn').forEach(btn => {
+    btn.addEventListener('click', () => { closeStatsModalFn(); openPlayerModal(btn.dataset.pid); });
+  });
+}
+
+function closeStatsModalFn() { document.getElementById('stats-modal').classList.remove('open'); }
+function closeStatsModal(e) {
+  if (e.target === document.getElementById('stats-modal')) closeStatsModalFn();
+}
+
+// ============================================================
+// PLAYER PROFILE MODAL
+// ============================================================
+function openPlayerModal(playerId) {
+  if (!playerId || playerId === 'undefined') { showToast('ไม่พบ ID ผู้เล่น'); return; }
+  const p = allPlayers.find(p => String(p.player_id) === String(playerId));
+  if (!p) { showToast('ไม่พบข้อมูลผู้เล่น'); return; }
+
+  const s = allScorers.find(x => String(x.player_id) === String(playerId)) || {};
+  document.getElementById('player-modal-content').innerHTML = `
+    <div class="flex flex-col items-center pt-4 pb-2">
+      <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
+        ${p.player_image ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>` : `<div class="logo-fallback text-2xl">${initials(p.player_name)}</div>`}
+      </div>
+      <h2 class="font-display font-black text-2xl text-white">${p.player_name}</h2>
+      <p class="text-sm text-[#4A6152] mb-1">${p.team_name}</p>
+      ${p.player_number   ? `<p class="text-xs text-green-400 font-bold">#${p.player_number}</p>` : ''}
+      ${p.player_position ? `<span class="mt-1 text-[10px] font-display font-bold px-3 py-0.5 rounded-full bg-green-500/10 text-green-400">${p.player_position}</span>` : ''}
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-3 mb-4">
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-green-400">${s.goals||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">⚽ ประตู</span>
+      </div>
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-blue-400">${s.assists||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">🅰 แอสซิสต์</span>
+      </div>
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-red-400">${s.owngoal||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">🔴 OG</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-2">
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-yellow-400">${s.yellow||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">🟨 ใบเหลือง</span>
+      </div>
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-red-600">${s.red||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">🟥 ใบแดง</span>
+      </div>
+      <div class="card flex flex-col items-center py-3">
+        <span class="text-2xl font-black text-blue-300">${s.saves||0}</span>
+        <span class="text-[10px] text-[#4A6152] mt-0.5">🧤 เซฟ</span>
+      </div>
+    </div>`;
+  document.getElementById('player-modal').classList.add('open');
+}
+
+function closePlayerModal(e) {
+  if (e.target === document.getElementById('player-modal'))
+    document.getElementById('player-modal').classList.remove('open');
+}
+
+// ============================================================
+// TEAM MODAL
+// ============================================================
+function openTeamModal(teamName) {
+  const team    = allTeams.find(t => t.team_name === teamName) || {};
+  const players = allPlayers.filter(p => p.team_name === teamName);
+  const statsMap = {};
+  allScorers.forEach(s => { statsMap[s.player_id] = s; });
+
+  let W=0, D=0, L=0, F=0, A=0;
+  allMatches
+    .filter(m => (m.status==='FT'||m.status==='Finished') && (m.home_team===teamName||m.away_team===teamName))
+    .forEach(m => {
+      const hs=Number(m.home_score), as=Number(m.away_score);
+      const isHome = m.home_team === teamName;
+      const gf=isHome?hs:as, ga=isHome?as:hs;
+      F+=gf; A+=ga;
+      if (gf>ga) W++; else if (gf<ga) L++; else D++;
+    });
+
+  document.getElementById('team-modal-content').innerHTML = `
+    <div class="flex flex-col items-center pt-4 pb-3">
+      <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
+        ${team.logo ? `<img src="${team.logo}" class="w-full h-full object-cover"/>` : `<div class="logo-fallback text-2xl">${initials(teamName)}</div>`}
+      </div>
+      <h2 class="font-display font-black text-2xl text-white mb-1">${teamName}</h2>
+      <div class="flex gap-4 text-center mt-1 mb-4">
+        <div><p class="text-xl font-black text-green-400">${W}</p><p class="text-[10px] text-[#4A6152]">W</p></div>
+        <div><p class="text-xl font-black text-[#4A6152]">${D}</p><p class="text-[10px] text-[#4A6152]">D</p></div>
+        <div><p class="text-xl font-black text-red-400">${L}</p><p class="text-[10px] text-[#4A6152]">L</p></div>
+        <div><p class="text-xl font-black text-white">${F}-${A}</p><p class="text-[10px] text-[#4A6152]">GF-GA</p></div>
+      </div>
+    </div>
+    <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">⚽ ผู้เล่น (${players.length} คน)</p>
+    <div class="grid grid-cols-3 gap-2">
+      ${players.length ? players.map(p => {
+        const s = statsMap[p.player_id] || {};
+        const hasStat = s.goals||s.assists||s.yellow||s.red||s.saves;
+        return `
+        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition"
+             onclick="document.getElementById('team-modal').classList.remove('open'); openPlayerModal('${p.player_id}')">
+          <div class="w-full aspect-square rounded-lg overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] mb-1.5">
+            ${p.player_image ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
+          </div>
+          <p class="text-xs font-semibold leading-tight truncate w-full">${p.player_name}</p>
+          <p class="text-[10px] text-[#4A6152] mb-1">#${p.player_number||'-'}${p.player_position?' · '+p.player_position:''}</p>
+          ${hasStat ? `<div class="flex flex-wrap gap-1 justify-center">
+            ${s.goals   ? `<span class="badge-g text-[10px] font-bold px-1.5 py-0.5 rounded-full">⚽${s.goals}</span>`   : ''}
+            ${s.assists ? `<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🅰${s.assists}</span>` : ''}
+            ${s.saves   ? `<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🧤${s.saves}</span>`   : ''}
+            ${s.yellow  ? `<span class="badge-y text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟨${s.yellow}</span>`  : ''}
+            ${s.red     ? `<span class="badge-r text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟥${s.red}</span>`     : ''}
+          </div>` : ''}
+        </div>`; }).join('')
+      : '<p class="text-xs text-[#4A6152] col-span-3 py-2">ยังไม่มีผู้เล่น</p>'}
+    </div>`;
+  document.getElementById('team-modal').classList.add('open');
+}
+
+function closeTeamModal(e) {
+  if (e.target === document.getElementById('team-modal'))
+    document.getElementById('team-modal').classList.remove('open');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
 function teamLogo(teamName) {
   const t = allTeams.find(t => t.team_name === teamName);
   return t ? t.logo : '';
@@ -856,228 +1095,20 @@ function initials(name) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
 }
 
-// ของใหม่ — วางแทน
 function formatDate(dateStr) {
   if (!dateStr || dateStr === 'TBD') return 'TBD';
   try {
     const [y, m, d] = dateStr.split('-').map(Number);
     return new Date(y, m - 1, d).toLocaleDateString('th-TH', {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+      weekday:'short', year:'numeric', month:'short', day:'numeric'
     });
   } catch { return dateStr; }
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.opacity = '1';
+  t.textContent = msg; t.style.opacity = '1';
   setTimeout(() => { t.style.opacity = '0'; }, 2200);
-}
-
-async function deleteEventItem(matchId, playerId, playerName, type, time) {
-  const res = await apiWrite('deleteEvent', { match_id: matchId, player_id: playerId, player_name: playerName, type, time });
-  if (res.success) {
-    showToast('ลบ Event สำเร็จ ✅');
-    const events = await api('getEvents', { matchId });
-    const icons = { goal: '⚽', assist: '🅰', yellow: '🟨', red: '🟥', owngoal: '🔴' };
-    document.getElementById('event-log').innerHTML = events.map(e => `
-      <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
-        <span>${icons[e.type?.toLowerCase()]||'📋'}</span>
-        <span class="text-xs font-semibold flex-1">${e.player_name}</span>
-        <span class="text-[10px] text-[#4A6152]">${e.team_name}</span>
-        <span class="text-[10px] text-[#4A6152]">${e.time ? e.time+"'" : ''}</span>
-        <button onclick="deleteEventItem('${e.match_id}','${e.player_id}','${e.player_name}','${e.type}','${e.time}')"
-          class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
-      </div>
-    `).join('') || '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
-  } else {
-    showToast('ลบไม่สำเร็จ ❌');
-  }
-}
-
-// ── STATS VIEW MORE MODAL ────────────────────────────────────
-// ── ฟังก์ชันใหม่ — เรียก openStatsModal จาก cache ──────────
-function openStatsModalFromCache(cacheKey) {
-  const c = statsCache[cacheKey];
-  if (!c) { showToast('ไม่พบข้อมูล'); return; }
-  openStatsModal(c.title, c.icon, c.players, c.statKey, c.badgeClass);
-}
-
-function openStatsModal(title, icon, players, statKey, badgeClass) {
-  const el = document.getElementById('stats-modal-content');
-  el.innerHTML = `
-    <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-3 mt-2">${icon} ${title} — ทั้งหมด</p>
-    ${players.map((p, i) => `
-      <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition player-row-btn"
-           data-pid="${p.player_id || ''}">
-        <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
-        <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
-          ${p.player_image
-            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-            : `<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-sm truncate">${p.player_name}</p>
-          <p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p>
-        </div>
-        <span class="${badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[statKey]}</span>
-      </div>
-    `).join('')}
-  `;
-  document.getElementById('stats-modal').classList.add('open');
-  el.querySelectorAll('.player-row-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      closeStatsModalFn();
-      openPlayerModal(btn.dataset.pid);
-    });
-  });
-}
-  
-function closeStatsModalFn() {
-  document.getElementById('stats-modal').classList.remove('open');
-}
-function closeStatsModal(e) {
-  if (e.target === document.getElementById('stats-modal')) closeStatsModalFn();
-}
-
-// ── PLAYER PROFILE MODAL ─────────────────────────────────────
-// ของใหม่
-function openPlayerModal(playerId) {
-  if (!playerId || playerId === 'undefined') { showToast('ไม่พบ ID ผู้เล่น'); return; }
-  const p = allPlayers.find(p => String(p.player_id) === String(playerId));
-  if (!p) {
-    showToast('ไม่พบข้อมูลผู้เล่น');
-    return;
-  }
-
-
-  // หา stats จาก scorers ที่โหลดมาแล้ว — ต้องเรียก api ใหม่
-  // ของใหม่ — ใช้ cache แทน เรียก API อีกครั้งเฉพาะถ้ายังไม่มีข้อมูล
-  const scorerData = allScorers.length ? Promise.resolve(allScorers) : api('getTopScorers');
-  scorerData.then(scorers => {
-    if (!allScorers.length) allScorers = scorers || [];
-    const s = allScorers.find(x => String(x.player_id) === String(playerId)) || {};
-    document.getElementById('player-modal-content').innerHTML = `
-      <div class="flex flex-col items-center pt-4 pb-2">
-        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
-          ${p.player_image
-            ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-            : `<div class="logo-fallback text-2xl">${initials(p.player_name)}</div>`}
-        </div>
-        <h2 class="font-display font-black text-2xl text-white">${p.player_name}</h2>
-        <p class="text-sm text-[#4A6152] mb-1">${p.team_name}</p>
-        ${p.player_number ? `<p class="text-xs text-green-400 font-bold">#${p.player_number}</p>` : ''}
-        ${p.player_position ? `<span class="mt-1 text-[10px] font-display font-bold px-3 py-0.5 rounded-full bg-green-500/10 text-green-400">${p.player_position}</span>` : ''}
-      </div>
-      <div class="grid grid-cols-3 gap-2 mt-3 mb-4">
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-green-400">${s.goals || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">⚽ ประตู</span>
-        </div>
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-blue-400">${s.assists || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">🅰 แอสซิสต์</span>
-        </div>
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-red-400">${s.owngoal || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">🔴 OG</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-3 gap-2">
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-yellow-400">${s.yellow || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">🟨 ใบเหลือง</span>
-        </div>
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-red-600">${s.red || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">🟥 ใบแดง</span>
-        </div>
-        <div class="card flex flex-col items-center py-3">
-          <span class="text-2xl font-black text-blue-300">${s.saves || 0}</span>
-          <span class="text-[10px] text-[#4A6152] mt-0.5">🧤 เซฟ</span>
-        </div>
-      </div>
-    `;
-    document.getElementById('player-modal').classList.add('open');
-  });
-}
-function closePlayerModal(e) {
-  if (e.target === document.getElementById('player-modal'))
-    document.getElementById('player-modal').classList.remove('open');
-}
-
-// ── TEAM MODAL ────────────────────────────────────────────────
-function openTeamModal(teamName) {
-  const team = allTeams.find(t => t.team_name === teamName) || {};
-  const players = allPlayers.filter(p => p.team_name === teamName);
-
-  // หา stats แต่ละคนจาก allScorers
-  const statsMap = {};
-  allScorers.forEach(s => { statsMap[s.player_id] = s; });
-
-  // หา record จาก standings (คำนวณใหม่จาก allMatches)
-  let W=0, D=0, L=0, F=0, A=0;
-  allMatches.filter(m => (m.status==='FT'||m.status==='Finished') && (m.home_team===teamName||m.away_team===teamName))
-    .forEach(m => {
-      const hs=Number(m.home_score), as=Number(m.away_score);
-      const isHome = m.home_team === teamName;
-      const gf = isHome ? hs : as, ga = isHome ? as : hs;
-      F+=gf; A+=ga;
-      if (gf>ga) W++; else if (gf<ga) L++; else D++;
-    });
-
-  document.getElementById('team-modal-content').innerHTML = `
-    <div class="flex flex-col items-center pt-4 pb-3">
-      <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
-        ${team.logo
-          ? `<img src="${team.logo}" class="w-full h-full object-cover"/>`
-          : `<div class="logo-fallback text-2xl">${initials(teamName)}</div>`}
-      </div>
-      <h2 class="font-display font-black text-2xl text-white mb-1">${teamName}</h2>
-      <div class="flex gap-4 text-center mt-1 mb-4">
-        <div><p class="text-xl font-black text-green-400">${W}</p><p class="text-[10px] text-[#4A6152]">W</p></div>
-        <div><p class="text-xl font-black text-[#4A6152]">${D}</p><p class="text-[10px] text-[#4A6152]">D</p></div>
-        <div><p class="text-xl font-black text-red-400">${L}</p><p class="text-[10px] text-[#4A6152]">L</p></div>
-        <div><p class="text-xl font-black text-white">${F}-${A}</p><p class="text-[10px] text-[#4A6152]">GF-GA</p></div>
-      </div>
-    </div>
-    <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">⚽ ผู้เล่น (${players.length} คน)</p>
-    <div class="grid grid-cols-3 gap-2">
-      ${players.length ? players.map(p => {
-        const s = statsMap[p.player_id] || {};
-        const goals   = s.goals   || 0;
-        const assists = s.assists || 0;
-        const yellow  = s.yellow  || 0;
-        const red     = s.red     || 0;
-        const saves   = s.saves   || 0;
-        const hasStat = goals || assists || yellow || red || saves;
-        return `
-        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition"
-             onclick="document.getElementById('team-modal').classList.remove('open'); openPlayerModal('${p.player_id}')">
-          <div class="w-full aspect-square rounded-lg overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] mb-1.5">
-            ${p.player_image
-              ? `<img src="${p.player_image}" class="w-full h-full object-cover"/>`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
-          </div>
-          <p class="text-xs font-semibold leading-tight truncate w-full">${p.player_name}</p>
-          <p class="text-[10px] text-[#4A6152] mb-1">#${p.player_number||'-'}${p.player_position ? ' · '+p.player_position : ''}</p>
-          ${hasStat ? `<div class="flex flex-wrap gap-1 justify-center">
-            ${goals   ? '<span class="badge-g text-[10px] font-bold px-1.5 py-0.5 rounded-full">⚽'+goals+'</span>'   : ''}
-            ${assists ? '<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🅰'+assists+'</span>' : ''}
-            ${saves   ? '<span class="badge-a text-[10px] font-bold px-1.5 py-0.5 rounded-full">🧤'+saves+'</span>'   : ''}
-            ${yellow  ? '<span class="badge-y text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟨'+yellow+'</span>'  : ''}
-            ${red     ? '<span class="badge-r text-[10px] font-bold px-1.5 py-0.5 rounded-full">🟥'+red+'</span>'     : ''}
-          </div>` : ''}
-        </div>`;
-      }).join('') : '<p class="text-xs text-[#4A6152] col-span-3 py-2">ยังไม่มีผู้เล่น</p>'}
-    </div>
-  `;
-  document.getElementById('team-modal').classList.add('open');
-}
-
-function closeTeamModal(e) {
-  if (e.target === document.getElementById('team-modal'))
-    document.getElementById('team-modal').classList.remove('open');
 }
 </script>
 </body>
