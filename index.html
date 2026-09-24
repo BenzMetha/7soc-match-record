@@ -2,16 +2,43 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0A0F0D"/>
 <title>Football League Hub</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;900&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+
+<!-- เชื่อมต่อล่วงหน้า: ตัด handshake ของ Apps Script / Drive / Fonts -->
+<link rel="preconnect" href="https://script.google.com" crossorigin/>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin/>
+<link rel="preconnect" href="https://drive.google.com"/>
+<link rel="preconnect" href="https://lh3.googleusercontent.com"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+
+<!-- ยิง API รายการลีกทันทีตั้งแต่ parse HTML (ไม่รอฟอนต์/CSS/รูป) -->
+<script>
+var API_URL = 'https://script.google.com/macros/s/AKfycbyak4t2zMp7OED8eYMSZbTMFPywu-vPM2bURQCCYZytCZFpbkdKrntSkPSCRIZvmEbANA/exec';
+window.__early = null;
+try {
+  window.__early = fetch(API_URL + '?action=getLeagues')
+    .then(function (r) { return r.json(); })
+    .catch(function () { return null; });
+} catch (e) {}
+</script>
+
+<!-- ฟอนต์แบบไม่บล็อกการแสดงผล (ลดเหลือเฉพาะ weight ที่ใช้จริง) -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+  href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Barlow+Condensed:wght@400;700;900&display=swap"/>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Barlow+Condensed:wght@400;700;900&display=swap"/></noscript>
+
+<!-- Tailwind ที่ build แล้ว (แทน cdn.tailwindcss.com) — ถ้าเพิ่ม class Tailwind ใหม่ในไฟล์นี้ ต้อง build ใหม่ -->
+<style id="tw">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.static{position:static}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.bottom-6{bottom:1.5rem}.left-1\/2{left:50%}.left-3{left:.75rem}.top-0{top:0}.top-1\/2{top:50%}.z-10{z-index:10}.z-20{z-index:20}.z-\[100\]{z-index:100}.col-span-3{grid-column:span 3/span 3}.mb-0\.5{margin-bottom:.125rem}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.ml-2{margin-left:.5rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.aspect-square{aspect-ratio:1/1}.h-1{height:.25rem}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-2\.5{height:.625rem}.h-20{height:5rem}.h-24{height:6rem}.h-4{height:1rem}.h-9{height:2.25rem}.h-full{height:100%}.max-h-64{max-height:16rem}.min-h-screen{min-height:100vh}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-12{width:3rem}.w-14{width:3.5rem}.w-20{width:5rem}.w-24{width:6rem}.w-40{width:10rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.-translate-y-1\/2{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-l-2{border-left-width:2px}.border-\[\#1E2B22\]{--tw-border-opacity:1;border-color:rgb(30 43 34/var(--tw-border-opacity,1))}.border-green-500{--tw-border-opacity:1;border-color:rgb(34 197 94/var(--tw-border-opacity,1))}.border-green-500\/20{border-color:rgba(34,197,94,.2)}.border-green-500\/30{border-color:rgba(34,197,94,.3)}.border-transparent{border-color:transparent}.bg-\[\#0A0F0D\]{--tw-bg-opacity:1;background-color:rgb(10 15 13/var(--tw-bg-opacity,1))}.bg-\[\#111916\]{--tw-bg-opacity:1;background-color:rgb(17 25 22/var(--tw-bg-opacity,1))}.bg-\[\#1A2420\]{--tw-bg-opacity:1;background-color:rgb(26 36 32/var(--tw-bg-opacity,1))}.bg-\[\#1E2B22\]{--tw-bg-opacity:1;background-color:rgb(30 43 34/var(--tw-bg-opacity,1))}.bg-\[\#2E3D34\]{--tw-bg-opacity:1;background-color:rgb(46 61 52/var(--tw-bg-opacity,1))}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246/var(--tw-bg-opacity,1))}.bg-green-400{--tw-bg-opacity:1;background-color:rgb(74 222 128/var(--tw-bg-opacity,1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94/var(--tw-bg-opacity,1))}.bg-green-500\/10{background-color:rgba(34,197,94,.1)}.bg-yellow-500\/15{background-color:rgba(234,179,8,.15)}.bg-yellow-500\/20{background-color:rgba(234,179,8,.2)}.object-cover{-o-object-fit:cover;object-fit:cover}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-1{padding-bottom:.25rem}.pb-10{padding-bottom:2.5rem}.pb-2{padding-bottom:.5rem}.pb-3{padding-bottom:.75rem}.pb-4{padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pl-8{padding-left:2rem}.pr-4{padding-right:1rem}.pt-1{padding-top:.25rem}.pt-10{padding-top:2.5rem}.pt-3{padding-top:.75rem}.pt-4{padding-top:1rem}.pt-5{padding-top:1.25rem}.text-center{text-align:center}.text-right{text-align:right}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-tight{line-height:1.25}.tracking-widest{letter-spacing:.1em}.text-\[\#2E3D34\]{--tw-text-opacity:1;color:rgb(46 61 52/var(--tw-text-opacity,1))}.text-\[\#4A6152\]{--tw-text-opacity:1;color:rgb(74 97 82/var(--tw-text-opacity,1))}.text-\[\#E8F5E9\]{--tw-text-opacity:1;color:rgb(232 245 233/var(--tw-text-opacity,1))}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6/var(--tw-text-opacity,1))}.text-black{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.text-blue-300{--tw-text-opacity:1;color:rgb(147 197 253/var(--tw-text-opacity,1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128/var(--tw-text-opacity,1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94/var(--tw-text-opacity,1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21/var(--tw-text-opacity,1))}.placeholder-\[\#4A6152\]::-moz-placeholder{--tw-placeholder-opacity:1;color:rgb(74 97 82/var(--tw-placeholder-opacity,1))}.placeholder-\[\#4A6152\]::placeholder{--tw-placeholder-opacity:1;color:rgb(74 97 82/var(--tw-placeholder-opacity,1))}.opacity-0{opacity:0}.blur{--tw-blur:blur(8px)}.blur,.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-300{transition-duration:.3s}.\[appearance\:textfield\]{-webkit-appearance:textfield;-moz-appearance:textfield;appearance:textfield}.hover\:border-green-500:hover{--tw-border-opacity:1;border-color:rgb(34 197 94/var(--tw-border-opacity,1))}.hover\:border-green-500\/30:hover{border-color:rgba(34,197,94,.3)}.hover\:border-green-500\/40:hover{border-color:rgba(34,197,94,.4)}.hover\:bg-green-400:hover{--tw-bg-opacity:1;background-color:rgb(74 222 128/var(--tw-bg-opacity,1))}.hover\:bg-green-500\/20:hover{background-color:rgba(34,197,94,.2)}.hover\:text-green-400:hover{--tw-text-opacity:1;color:rgb(74 222 128/var(--tw-text-opacity,1))}.hover\:text-red-400:hover{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.focus\:border-green-500:focus{--tw-border-opacity:1;border-color:rgb(34 197 94/var(--tw-border-opacity,1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.\[\&\:\:-webkit-inner-spin-button\]\:appearance-none::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none}</style>
+
 <style>
 :root{--green:#00C853;--green2:#00E676;--dark:#0A0F0D;--card:#111916;--border:#1E2B22;--muted:#4A6152;--text:#E8F5E9;}
-*{box-sizing:border-box;}
-body{font-family:'Kanit',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden;}
-.font-display{font-family:'Barlow Condensed',sans-serif;}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{background:var(--dark);-webkit-text-size-adjust:100%;}
+body{font-family:'Kanit','Noto Sans Thai','Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.font-display{font-family:'Barlow Condensed','Kanit',system-ui,sans-serif;}
 .screen-enter{animation:screenEnter .28s ease forwards;}
 @keyframes screenEnter{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
 .screen-back{animation:screenBack .28s ease forwards;}
@@ -28,10 +55,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .badge-y{background:rgba(255,214,0,.12);color:#FFD600;}
 .badge-r{background:rgba(229,57,53,.15);color:#EF5350;}
 .badge-a{background:rgba(33,150,243,.12);color:#42A5F5;}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
+
+/* Modal: ตอนปิดใช้ visibility:hidden และไม่มี blur (เครื่องอ่อนไม่ต้องคำนวณ) */
+.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.75);z-index:50;display:flex;align-items:flex-end;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s linear .3s;}
+.modal-overlay.open{opacity:1;visibility:visible;pointer-events:all;transition:opacity .25s,visibility 0s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 .modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.4,1);padding-bottom:env(safe-area-inset-bottom,16px);}
 .modal-overlay.open .modal-box{transform:translateY(0);}
+
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .live-dot{animation:pulse 1.4s infinite;}
 @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
@@ -51,6 +81,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .fade-up{animation:fadeUp .35s ease forwards;}
 .logo-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;color:var(--green);}
+button:disabled{opacity:.6;}
 
 /* ── Knockout Bracket ── */
 .bracket-wrapper{overflow-x:auto;padding-bottom:.5rem;}
@@ -63,9 +94,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .bracket-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.95rem;min-width:18px;text-align:right;}
 .bracket-score.winner-score{color:var(--green);}
 .bracket-divider{height:1px;background:var(--border);}
-/* connector lines */
-.bracket-connector{display:flex;align-items:center;}
-.bracket-connector-lines{display:flex;flex-direction:column;justify-content:space-around;}
 .cup-tab-btn{flex:1;padding:.4rem .5rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;border-radius:8px;border:1px solid var(--border);color:var(--muted);transition:all .15s;}
 .cup-tab-btn.active{border-color:var(--green);color:var(--green);background:rgba(0,200,83,.08);}
 </style>
@@ -92,7 +120,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </header>
   <div class="px-3 pb-10">
     <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">ALL LEAGUES</p>
-    <div id="leagues-list" class="space-y-2"></div>
+    <!-- skeleton แบบ static: เห็นทันทีก่อน JS ทำงาน -->
+    <div id="leagues-list" class="space-y-2">
+      <div class="card flex items-center gap-4 p-4"><div class="shimmer w-14 h-14 rounded-xl shrink-0"></div><div class="flex-1 space-y-2"><div class="shimmer h-2.5 w-20 rounded"></div><div class="shimmer h-4 w-40 rounded"></div></div></div>
+      <div class="card flex items-center gap-4 p-4"><div class="shimmer w-14 h-14 rounded-xl shrink-0"></div><div class="flex-1 space-y-2"><div class="shimmer h-2.5 w-20 rounded"></div><div class="shimmer h-4 w-40 rounded"></div></div></div>
+      <div class="card flex items-center gap-4 p-4"><div class="shimmer w-14 h-14 rounded-xl shrink-0"></div><div class="flex-1 space-y-2"><div class="shimmer h-2.5 w-20 rounded"></div><div class="shimmer h-4 w-40 rounded"></div></div></div>
+    </div>
   </div>
 </div>
 
@@ -103,7 +136,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <header class="sticky top-0 z-20 px-4 pt-5 pb-3" style="background:var(--dark);border-bottom:1px solid var(--border)">
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3 min-w-0">
-        <button onclick="goHome()" class="w-9 h-9 rounded-full bg-[#1E2B22] flex items-center justify-center text-[#4A6152] hover:text-green-400 transition shrink-0">
+        <button onclick="goHome()" class="w-9 h-9 rounded-full bg-[#1E2B22] flex items-center justify-center text-[#4A6152] hover:text-green-400 transition shrink-0" aria-label="กลับ">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
         </button>
         <div class="min-w-0">
@@ -139,7 +172,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <section id="tab-matches" class="tab-content hidden relative z-10 px-3 py-3">
     <div class="relative mb-3">
       <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A6152]" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
-      <input id="match-search" type="text" placeholder="ค้นหาชื่อทีม..." oninput="renderMatches(allMatches)"
+      <input id="match-search" type="text" placeholder="ค้นหาชื่อทีม..." oninput="debouncedRenderMatches()"
         class="w-full bg-[#111916] border border-[#1E2B22] rounded-xl pl-8 pr-4 py-2 text-sm text-[#E8F5E9] placeholder-[#4A6152] focus:outline-none focus:border-green-500 transition"/>
     </div>
     <div class="flex gap-2 mb-3 overflow-x-auto pb-1">
@@ -168,44 +201,74 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbyak4t2zMp7OED8eYMSZbTMFPywu-vPM2bURQCCYZytCZFpbkdKrntSkPSCRIZvmEbANA/exec';
+// API_URL ถูกประกาศไว้ใน <head> แล้ว (เพื่อยิง request แรกให้เร็วที่สุด)
 
 // ── STATE ────────────────────────────────────────────────────
-let allMatches   = [], allPlayers   = [], allTeams   = [], allScorers = [];
-let statsCache   = {}, currentFilter = 'all';
-let activeModal  = null, currentLeague = null;
+let allLeagues = [], allMatches = [], allPlayers = [], allTeams = [], allScorers = [];
+let logoMap = {}, statsCache = {}, currentFilter = 'all';
+let activeModal = null, currentLeague = null, busy = false;
 let selectedEvPlayer = null, selectedEvPlayerId = null, selectedEvSide = 'home';
 
+// ── SAFE STORAGE (บาง in-app browser โยน error เมื่อแตะ localStorage) ──
+function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
+
 // ── INIT ─────────────────────────────────────────────────────
-window.onload = () => loadLeagues();
+loadLeagues();
 
 // ============================================================
 // HOME
 // ============================================================
+function wait(ms){ return new Promise(function(r){ setTimeout(function(){ r(null); }, ms); }); }
+
 async function loadLeagues() {
-  document.getElementById('leagues-list').innerHTML = [1,2,3].map(()=>`
-    <div class="card flex items-center gap-4 p-4">
-      <div class="shimmer w-14 h-14 rounded-xl shrink-0"></div>
-      <div class="flex-1 space-y-2"><div class="shimmer h-2.5 w-20 rounded"></div><div class="shimmer h-4 w-40 rounded"></div></div>
-    </div>`).join('');
-  const leagues = await api('getLeagues');
-  renderLeagues(leagues || []);
+  const cached = lsGet('lh_leagues');
+  let shown = false;
+  if (cached) {
+    try {
+      const c = JSON.parse(cached);
+      if (Array.isArray(c) && c.length) { renderLeagues(c); shown = true; }
+    } catch(e){}
+  }
+
+  let leagues = null;
+  if (window.__early) {
+    leagues = await Promise.race([window.__early, wait(12000)]);
+    window.__early = null;
+  }
+  if (!Array.isArray(leagues)) {
+    try { leagues = await api('getLeagues'); } catch(e){ leagues = null; }
+  }
+
+  if (Array.isArray(leagues)) {
+    const fresh = JSON.stringify(leagues);
+    if (fresh !== cached || !shown) renderLeagues(leagues);
+    if (leagues.length) lsSet('lh_leagues', fresh);
+  } else if (!shown) {
+    document.getElementById('leagues-list').innerHTML =
+      '<div class="text-center py-12 px-4"><p class="text-sm text-[#4A6152] mb-3">โหลดรายการ League ไม่สำเร็จ</p>' +
+      '<button onclick="loadLeagues()" class="text-xs font-display font-bold px-4 py-2 rounded-full border border-green-500 text-green-400">ลองใหม่</button></div>';
+  }
 }
 
+function isCupObj(l) { return !!l && (l.is_cup === true || String(l.is_cup).toUpperCase() === 'TRUE'); }
+
 function renderLeagues(leagues) {
+  allLeagues = leagues;
   const el = document.getElementById('leagues-list');
   if (!leagues.length) { el.innerHTML='<p class="text-center text-[#4A6152] py-12 text-sm">ยังไม่มี League</p>'; return; }
-  el.innerHTML = leagues.map(lg => {
-    const isCup = lg.is_cup === true || String(lg.is_cup).toUpperCase() === 'TRUE';
+  el.innerHTML = leagues.map(function(lg) {
+    const cup = isCupObj(lg);
     return `
-    <div class="card league-card" onclick='selectLeague(${JSON.stringify(lg)})'>
+    <div class="card league-card" onclick="selectLeagueById('${esc(lg.league_id)}')">
       <div class="w-14 h-14 rounded-xl overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] shrink-0">
-        ${lg.league_logo ? `<img src="${lg.league_logo}" class="w-full h-full object-cover"/>` : `<div class="logo-fallback text-xl">${initials(lg.league_name)}</div>`}
+        ${lg.league_logo ? imgTag(lg.league_logo,112,'w-full h-full object-cover','',initials(lg.league_name),'1.25rem') : `<div class="logo-fallback text-xl">${initials(lg.league_name)}</div>`}
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-0.5">
           <p class="text-[10px] font-display font-bold tracking-widest text-green-500 uppercase">${lg.league_day||''}</p>
-          ${isCup ? '<span class="text-[9px] font-display font-bold px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">CUP</span>' : ''}
+          ${cup ? '<span class="text-[9px] font-display font-bold px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">CUP</span>' : ''}
         </div>
         <h3 class="font-display font-black text-lg text-white leading-tight truncate">${lg.league_name}</h3>
         <div class="flex items-center gap-2 mt-0.5">
@@ -218,17 +281,22 @@ function renderLeagues(leagues) {
   }).join('');
 }
 
+function selectLeagueById(id) {
+  const lg = allLeagues.find(function(l){ return String(l.league_id) === String(id); });
+  if (lg) selectLeague(lg);
+}
+
 function selectLeague(lg) {
   currentLeague = lg;
   document.getElementById('league-subtitle').textContent = lg.league_subtitle || lg.league_day || '';
   document.getElementById('league-title').textContent    = lg.league_name;
   const logoEl = document.getElementById('league-logo-header');
   logoEl.innerHTML = lg.league_logo
-    ? `<img src="${lg.league_logo}" class="w-full h-full object-cover"/>`
+    ? imgTag(lg.league_logo,112,'w-full h-full object-cover','',initials(lg.league_name),'.875rem')
     : `<span class="font-display font-black text-sm">${initials(lg.league_name)}</span>`;
 
-  document.querySelectorAll('.tab-content').forEach(s=>s.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(function(s){ s.classList.add('hidden'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-standings').classList.remove('hidden');
   document.querySelector('.tab-btn').classList.add('active');
 
@@ -236,32 +304,32 @@ function selectLeague(lg) {
   const ls = document.getElementById('screen-league');
   ls.classList.remove('hidden');
   ls.classList.add('screen-enter');
-  setTimeout(()=>ls.classList.remove('screen-enter'), 320);
+  setTimeout(function(){ ls.classList.remove('screen-enter'); }, 320);
   loadAll(lg.league_id);
 }
 
 function goHome() {
   currentLeague = null;
-  allMatches=[]; allPlayers=[]; allTeams=[]; allScorers=[];
+  allMatches=[]; allPlayers=[]; allTeams=[]; allScorers=[]; logoMap={};
   document.getElementById('screen-league').classList.add('hidden');
   const hs = document.getElementById('screen-home');
   hs.classList.remove('hidden');
   hs.classList.add('screen-back');
-  setTimeout(()=>hs.classList.remove('screen-back'), 320);
+  setTimeout(function(){ hs.classList.remove('screen-back'); }, 320);
 }
 
 // ============================================================
 // DATA
 // ============================================================
-function isCup() {
-  return currentLeague && (currentLeague.is_cup === true || String(currentLeague.is_cup).toUpperCase() === 'TRUE');
-}
+function isCup() { return isCupObj(currentLeague); }
 
 function applyData(d) {
   allMatches = d.matches  || [];
   allPlayers = d.players  || [];
   allTeams   = d.teams    || [];
   allScorers = d.scorers  || [];
+  logoMap = {};
+  allTeams.forEach(function(t){ logoMap[t.team_name] = t.logo; });
 
   if (d.is_cup || isCup()) {
     renderCupStandings(d.group_standings || [], d.knockout || []);
@@ -273,56 +341,76 @@ function applyData(d) {
   renderScorers(allScorers);
 }
 
+function showLoadError(leagueId) {
+  const html = '<div class="text-center py-10 px-4"><p class="text-sm text-[#4A6152] mb-3">โหลดข้อมูลไม่สำเร็จ</p>' +
+    '<button onclick="loadAll(\'' + esc(leagueId) + '\')" class="text-xs font-display font-bold px-4 py-2 rounded-full border border-green-500 text-green-400">ลองใหม่</button></div>';
+  ['standings-list','matches-list','scorers-list'].forEach(function(id){ document.getElementById(id).innerHTML = html; });
+}
+
 async function loadAll(leagueId) {
   const ckey = 'lh_' + leagueId;
-  const raw  = localStorage.getItem(ckey);
-  if (raw) { try { applyData(JSON.parse(raw)); } catch(e){} }
-  else {
-    ['standings-list','matches-list','scorers-list'].forEach(id=>showShimmer(id,6));
-  }
-  const d = await api('getInitialData', { leagueId });
-  if (d && !d.error) {
-    applyData(d);
-    try { localStorage.setItem(ckey, JSON.stringify(d)); } catch(e){}
+  const raw  = lsGet(ckey);
+  let shown  = false;
+  if (raw) { try { applyData(JSON.parse(raw)); shown = true; } catch(e){} }
+  if (!shown) ['standings-list','matches-list','scorers-list'].forEach(function(id){ showShimmer(id,6); });
+
+  const stillHere = function(){ return currentLeague && String(currentLeague.league_id) === String(leagueId); };
+  try {
+    const d = await api('getInitialData', { leagueId: leagueId });
+    if (!stillHere()) return;                       // ผู้ใช้กลับหน้าแรก/เปลี่ยนลีกไปแล้ว
+    if (d && !d.error) { applyData(d); lsSet(ckey, JSON.stringify(d)); }
+    else if (!shown) showLoadError(leagueId);
+  } catch(e) {
+    if (stillHere() && !shown) showLoadError(leagueId);
   }
 }
 
 // ── API ──────────────────────────────────────────────────────
-async function api(action, params={}) {
-  const qs  = new URLSearchParams({ action, ...params });
-  const res = await fetch(`${API_URL}?${qs}`);
-  return res.json();
+// อ่าน: timeout 20 วิ + ลองซ้ำ 1 ครั้ง / เขียน: ไม่ลองซ้ำ (กันข้อมูลซ้ำ)
+async function api(action, params, opt) {
+  params = params || {};
+  const tries   = (opt && opt.retry === false) ? 1 : 2;
+  const timeout = (opt && opt.timeout) || 20000;
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    const ctrl = new AbortController();
+    const t = setTimeout(function(){ ctrl.abort(); }, timeout);
+    try {
+      const qs  = new URLSearchParams(Object.assign({ action: action }, params));
+      const res = await fetch(API_URL + '?' + qs, { signal: ctrl.signal });
+      const data = await res.json();
+      clearTimeout(t);
+      return data;
+    } catch(e) { clearTimeout(t); lastErr = e; }
+  }
+  throw lastErr;
 }
 async function apiWrite(action, data) {
-  const payload = { ...data, league_id: currentLeague?.league_id };
-  const qs  = new URLSearchParams({ action, data: JSON.stringify(payload) });
-  const res = await fetch(`${API_URL}?${qs}`);
-  return res.json();
+  const payload = Object.assign({}, data, { league_id: currentLeague ? currentLeague.league_id : undefined });
+  try {
+    return await api(action, { data: JSON.stringify(payload) }, { retry: false, timeout: 30000 });
+  } catch(e) { return { error: 'network' }; }
 }
 
 // ── TABS ─────────────────────────────────────────────────────
 function switchTab(name, btn) {
-  document.querySelectorAll('.tab-content').forEach(s=>s.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(function(s){ s.classList.add('hidden'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-'+name).classList.remove('hidden');
   document.getElementById('tab-'+name).classList.add('fade-up');
   btn.classList.add('active');
 }
 function showShimmer(id,n){
-  document.getElementById(id).innerHTML = Array(n).fill(0).map(()=>'<div class="shimmer h-12 w-full mb-2"></div>').join('');
+  document.getElementById(id).innerHTML = Array(n).fill(0).map(function(){ return '<div class="shimmer h-12 w-full mb-2"></div>'; }).join('');
 }
 
 // ============================================================
 // RENDER: STANDINGS (league ปกติ)
 // ============================================================
-function renderStandings(data) {
-  const el = document.getElementById('standings-list');
-  if (!data.length){el.innerHTML='<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>';return;}
-  el.innerHTML = data.map((t,i)=>{
-    const hl  = i===0 ? 'border-l-2 border-green-500':'';
-    const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
-    return `
-    <div class="stand-row card flex items-center px-3 py-2.5 cursor-pointer ${hl}" onclick="openTeamModal('${esc(t.team_name)}')">
+function standRow(t,i,extraCls,mb) {
+  const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+  return `
+    <div class="stand-row card flex items-center px-3 py-2.5 ${mb||''} cursor-pointer ${extraCls}" onclick="openTeamModal('${esc(t.team_name)}')">
       <span class="w-6 text-center text-xs font-bold text-[#4A6152]">${pos}</span>
       <div class="flex items-center gap-2 flex-1 ml-2 min-w-0">
         ${logoImg(t.logo,t.team_name,24)}
@@ -335,7 +423,12 @@ function renderStandings(data) {
       <span class="w-8 text-center text-xs ${t.GD>=0?'text-green-400':'text-red-400'}">${t.GD>0?'+':''}${t.GD}</span>
       <span class="w-8 text-center text-sm font-black text-green-400">${t.PTS}</span>
     </div>`;
-  }).join('');
+}
+
+function renderStandings(data) {
+  const el = document.getElementById('standings-list');
+  if (!data.length){el.innerHTML='<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>';return;}
+  el.innerHTML = data.map(function(t,i){ return standRow(t,i, i===0 ? 'border-l-2 border-green-500' : '', ''); }).join('');
 }
 
 // ============================================================
@@ -352,15 +445,13 @@ function renderCupStandings(groups, knockout) {
     <div id="cup-group-view"></div>
     <div id="cup-knockout-view" class="hidden"></div>`;
 
-  // Group view
   const gv = document.getElementById('cup-group-view');
   if (!groups.length) {
     gv.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล Group Stage</p>';
   } else {
-    gv.innerHTML = groups.map(g => groupTable(g)).join('');
+    gv.innerHTML = groups.map(function(g){ return groupTable(g); }).join('');
   }
 
-  // Knockout view
   const kv = document.getElementById('cup-knockout-view');
   if (!knockout.length) {
     kv.innerHTML = '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล Knockout</p>';
@@ -370,15 +461,12 @@ function renderCupStandings(groups, knockout) {
 }
 
 function showCupTab(tab) {
-  document.querySelectorAll('.cup-tab-btn').forEach(b=>{
-    b.classList.remove('active');
-  });
+  document.querySelectorAll('.cup-tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('cup-tab-'+tab).classList.add('active');
   document.getElementById('cup-group-view').classList.toggle('hidden', tab!=='group');
   document.getElementById('cup-knockout-view').classList.toggle('hidden', tab!=='knockout');
 }
 
-// ── Group table HTML ─────────────────────────────────────────
 function groupTable(g) {
   const standHeader = `
     <div class="flex items-center px-3 py-1 text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] mb-1">
@@ -388,24 +476,8 @@ function groupTable(g) {
       <span class="w-8 text-center">GD</span>
       <span class="w-8 text-center font-black text-green-500">PTS</span>
     </div>`;
-  const rows = g.teams.map((t,i)=>{
-    const qualify = i<2;
-    const hl = qualify?'border-l-2 border-green-500':'border-l-2 border-transparent';
-    const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
-    return `
-    <div class="stand-row card flex items-center px-3 py-2.5 mb-1 cursor-pointer ${hl}" onclick="openTeamModal('${esc(t.team_name)}')">
-      <span class="w-6 text-center text-xs font-bold text-[#4A6152]">${pos}</span>
-      <div class="flex items-center gap-2 flex-1 ml-2 min-w-0">
-        ${logoImg(t.logo,t.team_name,24)}
-        <span class="font-semibold text-sm truncate">${t.team_name}</span>
-      </div>
-      <span class="w-7 text-center text-xs text-[#4A6152]">${t.MP}</span>
-      <span class="w-7 text-center text-xs text-green-400">${t.W}</span>
-      <span class="w-7 text-center text-xs text-[#4A6152]">${t.D}</span>
-      <span class="w-7 text-center text-xs text-red-400">${t.L}</span>
-      <span class="w-8 text-center text-xs ${t.GD>=0?'text-green-400':'text-red-400'}">${t.GD>0?'+':''}${t.GD}</span>
-      <span class="w-8 text-center text-sm font-black text-green-400">${t.PTS}</span>
-    </div>`;
+  const rows = g.teams.map(function(t,i){
+    return standRow(t,i, i<2 ? 'border-l-2 border-green-500' : 'border-l-2 border-transparent', 'mb-1');
   }).join('');
   return `
   <div class="mb-5">
@@ -419,29 +491,22 @@ function groupTable(g) {
 
 // ── Knockout Bracket HTML ─────────────────────────────────────
 function renderKnockoutBracket(rounds) {
-  // แสดงเป็น visual bracket แนวนอน
   if (!rounds.length) return '<p class="text-center text-[#4A6152] py-8">ยังไม่มีข้อมูล</p>';
-
-  // ตรวจว่ามีมากกว่า 1 รอบหรือไม่ — ถ้า 1 รอบก็แสดงแบบ list เรียบง่าย
   if (rounds.length === 1) return singleRoundHTML(rounds[0]);
-
-  // มีหลายรอบ → bracket layout แนวนอน
   return `
   <div class="bracket-wrapper pb-4">
     <div class="flex gap-4 items-start" style="min-width:${rounds.length*160}px">
-      ${rounds.map(r => roundColumn(r)).join('')}
+      ${rounds.map(function(r){ return roundColumn(r); }).join('')}
     </div>
-  </div>
-  ${rounds.map(r=>bracketRoundLegend(r)).join('')}`;
+  </div>`;
 }
 
 function roundColumn(r) {
-  const roundLabel = roundDisplayName(r.round);
   return `
   <div class="flex flex-col" style="min-width:148px">
-    <p class="bracket-round-label mb-2">${roundLabel}</p>
+    <p class="bracket-round-label mb-2">${roundDisplayName(r.round)}</p>
     <div class="flex flex-col gap-3 flex-1 justify-around">
-      ${r.matches.map(m=>bracketMatchCard(m)).join('')}
+      ${r.matches.map(function(m){ return bracketMatchCard(m); }).join('')}
     </div>
   </div>`;
 }
@@ -455,7 +520,7 @@ function bracketMatchCard(m) {
   const awayLogo = logoImgRaw(teamLogo(m.away_team), m.away_team, 20);
 
   return `
-  <div class="bracket-match cursor-pointer hover:border-green-500/40 transition" onclick='openModal(${JSON.stringify(m)})'>
+  <div class="bracket-match cursor-pointer hover:border-green-500/40 transition" onclick="openModalById('${esc(m.match_id)}')">
     <div class="bracket-team ${homeWin?'winner':awayWin?'loser':''}">
       ${homeLogo}
       <span class="bracket-team-name">${m.home_team}</span>
@@ -475,11 +540,9 @@ function singleRoundHTML(r) {
   return `
   <div class="mb-4">
     <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] px-1 mb-3">${roundDisplayName(r.round)}</p>
-    <div class="space-y-2">${r.matches.map(m=>bracketMatchCard(m)).join('')}</div>
+    <div class="space-y-2">${r.matches.map(function(m){ return bracketMatchCard(m); }).join('')}</div>
   </div>`;
 }
-
-function bracketRoundLegend(r) { return ''; } // placeholder
 
 function roundDisplayName(r) {
   const map = { R32:'Round of 32', R16:'Round of 16', QF:'Quarter Final', SF:'Semi Final', '3RD':'3rd Place', F:'FINAL', FINAL:'FINAL' };
@@ -489,28 +552,39 @@ function roundDisplayName(r) {
 // ============================================================
 // RENDER: MATCHES
 // ============================================================
+let _dt = null;
+function debouncedRenderMatches() {
+  clearTimeout(_dt);
+  _dt = setTimeout(function(){ renderMatches(allMatches); }, 200);
+}
+
 function renderMatches(data) {
   const el       = document.getElementById('matches-list');
-  const search   = (document.getElementById('match-search')?.value||'').trim().toLowerCase();
-  const todayStr = (() => { const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0'); })();
+  const si       = document.getElementById('match-search');
+  const search   = ((si && si.value) || '').trim().toLowerCase();
+  const n        = new Date();
+  const todayStr = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 
   let filtered = data;
-  if (currentFilter==='today')    filtered = data.filter(m=>m.match_date===todayStr);
-  if (currentFilter==='upcoming') filtered = data.filter(m=>m.status!=='FT'&&m.status!=='Finished');
-  if (currentFilter==='ft')       filtered = data.filter(m=>m.status==='FT'||m.status==='Finished');
-  if (search) filtered = filtered.filter(m=>
-    m.home_team?.toLowerCase().includes(search)||m.away_team?.toLowerCase().includes(search));
+  if (currentFilter==='today')    filtered = data.filter(function(m){ return m.match_date===todayStr; });
+  if (currentFilter==='upcoming') filtered = data.filter(function(m){ return m.status!=='FT'&&m.status!=='Finished'; });
+  if (currentFilter==='ft')       filtered = data.filter(function(m){ return m.status==='FT'||m.status==='Finished'; });
+  if (search) filtered = filtered.filter(function(m){
+    return String(m.home_team||'').toLowerCase().includes(search) || String(m.away_team||'').toLowerCase().includes(search);
+  });
 
   if (!filtered.length){el.innerHTML='<p class="text-center text-[#4A6152] py-8">ไม่พบแมตช์</p>';return;}
 
   const byDate={};
-  filtered.forEach(m=>{ const d=m.match_date||'TBD'; if(!byDate[d])byDate[d]=[]; byDate[d].push(m); });
+  filtered.forEach(function(m){ const d=m.match_date||'TBD'; if(!byDate[d])byDate[d]=[]; byDate[d].push(m); });
 
-  el.innerHTML = Object.entries(byDate).map(([date,ms])=>`
+  el.innerHTML = Object.entries(byDate).map(function(kv){
+    return `
     <div>
-      <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">${formatDate(date)}</p>
-      <div class="space-y-2">${ms.map(m=>matchCard(m)).join('')}</div>
-    </div>`).join('');
+      <p class="text-[10px] font-display font-bold tracking-widest uppercase text-[#4A6152] px-1 mb-2">${formatDate(kv[0])}</p>
+      <div class="space-y-2">${kv[1].map(function(m){ return matchCard(m); }).join('')}</div>
+    </div>`;
+  }).join('');
 }
 
 function matchCard(m) {
@@ -526,7 +600,7 @@ function matchCard(m) {
     ? `<span class="text-[9px] font-display font-bold px-1.5 py-0.5 rounded ${isKO?'bg-yellow-500/15 text-yellow-400':'bg-[#1E2B22] text-[#4A6152]'}">${isKO?(m.group_name||'KO'):'GP-'+m.group_name}</span>`
     : '';
   return `
-  <div class="card p-3 cursor-pointer" onclick='openModal(${JSON.stringify(m)})'>
+  <div class="card p-3 cursor-pointer" onclick="openModalById('${esc(m.match_id)}')">
     <div class="flex items-center justify-between mb-2">
       <div class="flex items-center gap-1.5">${roundTag}<span class="text-[10px] text-[#4A6152] font-display">${m.venue||''}</span></div>
       ${badge}
@@ -556,7 +630,7 @@ function matchCard(m) {
 
 function filterMatches(f) {
   currentFilter = f;
-  document.querySelectorAll('.match-filter-btn').forEach(b=>{
+  document.querySelectorAll('.match-filter-btn').forEach(function(b){
     b.classList.remove('border-green-500','text-green-400');
     b.classList.add('border-[#1E2B22]','text-[#4A6152]');
   });
@@ -575,10 +649,10 @@ function renderScorers(data) {
 
   function pRow(p,i,bc,sk) {
     return `
-    <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition" onclick="openPlayerModal('${p.player_id}')">
+    <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition" onclick="openPlayerModal('${esc(p.player_id)}')">
       <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
       <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
-        ${p.player_image?`<img src="${p.player_image}" class="w-full h-full object-cover"/>`:`<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+        ${p.player_image?imgTag(p.player_image,96,'w-full h-full object-cover','',initials(p.player_name),'.75rem'):`<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
       </div>
       <div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${p.player_name}</p><p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p></div>
       <span class="${bc} text-sm font-black px-3 py-1 rounded-full">${p[sk]}</span>
@@ -586,15 +660,15 @@ function renderScorers(data) {
   }
 
   function group(title, icon, arr, sk, bc) {
-    const f = arr.filter(p=>p[sk]>0).sort((a,b)=>b[sk]-a[sk]);
+    const f = arr.filter(function(p){ return p[sk]>0; }).sort(function(a,b){ return b[sk]-a[sk]; });
     if (!f.length) return '';
     const top = f.slice(0,10);
     const ck  = 'stats_'+sk;
-    statsCache[ck] = { title, icon, players:f, statKey:sk, badgeClass:bc };
+    statsCache[ck] = { title: title, icon: icon, players:f, statKey:sk, badgeClass:bc };
     return `
     <div class="mb-5">
       <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">${icon} ${title}</p>
-      ${top.map((p,i)=>pRow(p,i,bc,sk)).join('')}
+      ${top.map(function(p,i){ return pRow(p,i,bc,sk); }).join('')}
       ${f.length>10?`<button onclick="openStatsModal('${ck}')" class="w-full mt-1 py-2 text-xs font-display font-bold text-[#4A6152] hover:text-green-400 border border-[#1E2B22] hover:border-green-500/30 rounded-xl transition">VIEW MORE (${f.length-10} คน)</button>`:''}
     </div>`;
   }
@@ -611,15 +685,45 @@ function renderScorers(data) {
 // ============================================================
 // MATCH MODAL
 // ============================================================
+function openModalById(id) {
+  const m = allMatches.find(function(x){ return String(x.match_id) === String(id); });
+  if (m) openModal(m);
+}
+
 async function openModal(match) {
   activeModal = match;
-  const events = await api('getEvents', { matchId: match.match_id });
-  renderModalContent(match, events||[]);
+  renderModalContent(match, null);                 // เปิดทันที แล้วค่อยเติม Event ทีหลัง
   document.getElementById('match-modal').classList.add('open');
+  try {
+    const r = await api('getEvents', { matchId: match.match_id });
+    if (activeModal !== match) return;
+    setEventLog(Array.isArray(r) ? r : []);
+  } catch(e) {
+    if (activeModal === match) {
+      const el = document.getElementById('event-log');
+      if (el) el.innerHTML = '<p class="text-xs text-red-400">โหลด Event ไม่สำเร็จ ลองปิดแล้วเปิดใหม่</p>';
+    }
+  }
+}
+
+function nz(v){ return v == null ? '' : v; }
+
+function setEventLog(events) {
+  const el = document.getElementById('event-log');
+  if (!el) return;
+  el.innerHTML = events.length
+    ? events.map(function(ev){ return eventRow(ev); }).join('')
+    : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
+}
+
+async function refreshEvents(matchId) {
+  try {
+    const ev = await api('getEvents', { matchId: matchId });
+    setEventLog(Array.isArray(ev) ? ev : []);
+  } catch(e) { showToast('โหลด Event ไม่สำเร็จ'); }
 }
 
 function renderModalContent(match, events) {
-  const icons = { goal:'⚽',assist:'🅰',yellow:'🟨',red:'🟥',owngoal:'🔴',save:'🧤' };
   document.getElementById('modal-content').innerHTML = `
     <div class="flex items-center justify-between mb-5 mt-1">
       <div class="flex flex-col items-center gap-1 flex-1">
@@ -628,9 +732,9 @@ function renderModalContent(match, events) {
       </div>
       <div class="flex flex-col items-center px-4">
         <div class="flex items-center gap-2">
-          <input type="number" id="home-score" class="score-input" value="${match.home_score??''}" min="0" placeholder="0"/>
+          <input type="number" id="home-score" class="score-input" value="${nz(match.home_score)}" min="0" placeholder="0"/>
           <span class="font-display font-black text-xl text-[#4A6152]">:</span>
-          <input type="number" id="away-score" class="score-input" value="${match.away_score??''}" min="0" placeholder="0"/>
+          <input type="number" id="away-score" class="score-input" value="${nz(match.away_score)}" min="0" placeholder="0"/>
         </div>
         <select id="match-status" class="mt-2 text-xs bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-2 py-1 text-[#4A6152] focus:outline-none focus:border-green-500">
           <option value="Upcoming" ${match.status==='Upcoming'?'selected':''}>กำลังจะมา</option>
@@ -650,11 +754,11 @@ function renderModalContent(match, events) {
         <span class="text-xs font-semibold text-center">${match.away_team}</span>
       </div>
     </div>
-    <button onclick="saveScore()" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl mb-5 transition">บันทึกผลการแข่งขัน</button>
+    <button id="btn-save-score" onclick="saveScore()" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl mb-5 transition">บันทึกผลการแข่งขัน</button>
     <div class="mb-4">
       <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2">Event Log</p>
       <div id="event-log" class="space-y-1.5 mb-3">
-        ${events.length ? events.map(ev=>eventRow(ev)).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>'}
+        ${events ? (events.length ? events.map(function(ev){ return eventRow(ev); }).join('') : '<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>') : '<p class="text-xs text-[#4A6152]">กำลังโหลด...</p>'}
       </div>
     </div>
     <button onclick="openEventFormModal()" class="w-full bg-[#1E2B22] hover:bg-green-500/20 border border-[#1E2B22] hover:border-green-500 text-green-400 font-bold font-display py-2.5 rounded-xl transition">+ เพิ่ม Event</button>`;
@@ -664,43 +768,54 @@ function eventRow(ev) {
   const icons={goal:'⚽',assist:'🅰',yellow:'🟨',red:'🟥',owngoal:'🔴',save:'🧤'};
   return `
   <div class="flex items-center gap-2 bg-[#0A0F0D] px-3 py-2 rounded-lg">
-    <span>${icons[ev.type?.toLowerCase()]||'📋'}</span>
+    <span>${icons[String(ev.type||'').toLowerCase()]||'📋'}</span>
     <span class="text-xs font-semibold flex-1">${ev.player_name}</span>
     <span class="text-[10px] text-[#4A6152]">${ev.team_name}</span>
-    <span class="text-[10px] text-[#4A6152]">${ev.time?ev.time+"'":''}
-    </span>
-    <button onclick="deleteEventItem('${ev.match_id}','${ev.player_id}','${esc(ev.player_name)}','${ev.type}','${ev.time}')" class="text-[#4A6152] hover:text-red-400 transition text-xs px-1">✕</button>
+    <span class="text-[10px] text-[#4A6152]">${ev.time?ev.time+"'":''}</span>
+    <button onclick="deleteEventItem('${esc(ev.match_id)}','${esc(ev.player_id)}','${esc(ev.player_name)}','${esc(ev.type)}','${esc(ev.time)}')" class="text-[#4A6152] hover:text-red-400 transition text-xs px-1" aria-label="ลบ">✕</button>
   </div>`;
 }
 
 async function saveScore() {
+  if (busy) return;
   const hs=document.getElementById('home-score').value;
   const as=document.getElementById('away-score').value;
   const status=document.getElementById('match-status').value;
-  const hp=document.getElementById('home-possession')?.value;
-  const ap=document.getElementById('away-possession')?.value;
+  const hp=document.getElementById('home-possession') ? document.getElementById('home-possession').value : '';
+  const ap=document.getElementById('away-possession') ? document.getElementById('away-possession').value : '';
   if(hs===''||as===''){showToast('กรุณากรอกคะแนนก่อน');return;}
-  const res = await apiWrite('saveMatchResult',{
-    match_id:activeModal.match_id,home_score:Number(hs),away_score:Number(as),
-    status,home_possession:hp,away_possession:ap,
-  });
-  if(res.success){
-    const m=allMatches.find(m=>String(m.match_id)===String(activeModal.match_id));
-    if(m){m.home_score=Number(hs);m.away_score=Number(as);m.status=status;if(hp)m.home_possession=Number(hp);if(ap)m.away_possession=Number(ap);}
-    showToast('บันทึกผลสำเร็จ ✅');
-    closeModalById('match-modal');
-    const ckey='lh_'+currentLeague?.league_id; localStorage.removeItem(ckey);
-    const fd=await api('getInitialData',{leagueId:currentLeague?.league_id});
-    if(fd&&!fd.error){applyData(fd);try{localStorage.setItem(ckey,JSON.stringify(fd));}catch(e){}}
-  } else { showToast('เกิดข้อผิดพลาด ❌'); }
+
+  const btn = document.getElementById('btn-save-score');
+  busy = true; btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  const lid = currentLeague ? currentLeague.league_id : null;
+  try {
+    const res = await apiWrite('saveMatchResult',{
+      match_id:activeModal.match_id,home_score:Number(hs),away_score:Number(as),
+      status:status,home_possession:hp,away_possession:ap,
+    });
+    if(res && res.success){
+      const m=allMatches.find(function(m){ return String(m.match_id)===String(activeModal.match_id); });
+      if(m){m.home_score=Number(hs);m.away_score=Number(as);m.status=status;if(hp)m.home_possession=Number(hp);if(ap)m.away_possession=Number(ap);}
+      showToast('บันทึกผลสำเร็จ ✅');
+      closeModalById('match-modal');
+      const ckey='lh_'+lid; lsDel(ckey);
+      try {
+        const fd=await api('getInitialData',{leagueId:lid});
+        if(fd&&!fd.error&&currentLeague&&String(currentLeague.league_id)===String(lid)){applyData(fd);lsSet(ckey,JSON.stringify(fd));}
+      } catch(e){}
+    } else { showToast('เกิดข้อผิดพลาด ❌ ตรวจสัญญาณแล้วลองอีกครั้ง'); }
+  } finally {
+    busy = false;
+    const b = document.getElementById('btn-save-score');
+    if (b) { b.disabled = false; b.textContent = 'บันทึกผลการแข่งขัน'; }
+  }
 }
 
 async function deleteEventItem(matchId,playerId,playerName,type,time){
-  const res=await apiWrite('deleteEvent',{match_id:matchId,player_id:playerId,player_name:playerName,type,time});
-  if(res.success){
+  const res=await apiWrite('deleteEvent',{match_id:matchId,player_id:playerId,player_name:playerName,type:type,time:time});
+  if(res && res.success){
     showToast('ลบ Event สำเร็จ ✅');
-    const events=await api('getEvents',{matchId});
-    document.getElementById('event-log').innerHTML=events.map(e=>eventRow(e)).join('')||'<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
+    refreshEvents(matchId);
   } else { showToast('ลบไม่สำเร็จ ❌'); }
 }
 
@@ -709,8 +824,8 @@ async function deleteEventItem(matchId,playerId,playerName,type,time){
 // ============================================================
 function openEventFormModal() {
   const match=activeModal; if(!match) return;
-  const hPlayers=allPlayers.filter(p=>p.team_name===match.home_team);
-  const aPlayers=allPlayers.filter(p=>p.team_name===match.away_team);
+  const hPlayers=allPlayers.filter(function(p){ return p.team_name===match.home_team; });
+  const aPlayers=allPlayers.filter(function(p){ return p.team_name===match.away_team; });
   selectedEvPlayer=null; selectedEvPlayerId=null; selectedEvSide='home';
 
   document.getElementById('event-form-content').innerHTML=`
@@ -741,13 +856,14 @@ function openEventFormModal() {
     <div id="ev-players-away" class="hidden grid grid-cols-3 gap-2 max-h-64 overflow-y-auto mb-3">${playerChips(aPlayers,'away')}</div>
     <button id="btn-confirm-event" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl transition">บันทึก Event</button>`;
 
-  document.getElementById('btn-confirm-event').onclick = ()=>addEvent(match.home_team,match.away_team);
+  document.getElementById('btn-confirm-event').onclick = function(){ addEvent(match.home_team,match.away_team); };
   document.getElementById('event-form-modal').classList.add('open');
 }
 
 function switchEvTab(side) {
   selectedEvSide=side; selectedEvPlayer=null; selectedEvPlayerId=null;
-  document.querySelectorAll('.ev-team-tab').forEach(b=>{
+  document.querySelectorAll('.player-chip').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelectorAll('.ev-team-tab').forEach(function(b){
     b.classList.remove('border-green-500','text-green-400','bg-green-500/10');
     b.classList.add('border-[#1E2B22]','text-[#4A6152]');
   });
@@ -758,36 +874,45 @@ function switchEvTab(side) {
 }
 
 function selectPlayer(side,name,pid){
-  document.querySelectorAll('.player-chip').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.player-chip').forEach(function(c){ c.classList.remove('selected'); });
   selectedEvPlayer=name; selectedEvPlayerId=pid;
   const chip=document.getElementById('chip-'+side+'-'+pid);
   if(chip) chip.classList.add('selected');
 }
 
 async function addEvent(homeTeam,awayTeam){
+  if(busy) return;
   if(!selectedEvPlayer){showToast('กรุณาเลือกผู้เล่นก่อน');return;}
   const type=document.getElementById('ev-type').value;
   const time=document.getElementById('ev-time').value;
   const teamName=selectedEvSide==='home'?homeTeam:awayTeam;
-  const ev={type,player_id:selectedEvPlayerId,player_name:selectedEvPlayer,team_name:teamName,time:time||'',match_id:activeModal.match_id};
-  const res=await apiWrite('saveEvent',ev);
-  if(res.success){
-    document.getElementById('event-form-modal').classList.remove('open');
-    showToast('บันทึก Event สำเร็จ ✅');
-    const events=await api('getEvents',{matchId:activeModal.match_id});
-    document.getElementById('event-log').innerHTML=events.map(e=>eventRow(e)).join('')||'<p class="text-xs text-[#4A6152]">ยังไม่มี Event</p>';
-    selectedEvPlayer=null;
-  } else { showToast('เกิดข้อผิดพลาด ❌'); }
+  const ev={type:type,player_id:selectedEvPlayerId,player_name:selectedEvPlayer,team_name:teamName,time:time||'',match_id:activeModal.match_id};
+
+  const btn = document.getElementById('btn-confirm-event');
+  busy = true; btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  try {
+    const res=await apiWrite('saveEvent',ev);
+    if(res && res.success){
+      document.getElementById('event-form-modal').classList.remove('open');
+      showToast('บันทึก Event สำเร็จ ✅');
+      selectedEvPlayer=null;
+      refreshEvents(activeModal.match_id);
+    } else { showToast('เกิดข้อผิดพลาด ❌ ตรวจสัญญาณแล้วลองอีกครั้ง'); }
+  } finally {
+    busy = false;
+    const b = document.getElementById('btn-confirm-event');
+    if (b) { b.disabled = false; b.textContent = 'บันทึก Event'; }
+  }
 }
 
 function playerChips(players,side){
   if(!players.length) return '<p class="text-xs text-[#4A6152] col-span-3 py-2">ไม่มีผู้เล่น</p>';
-  return players.map(p=>`
-    <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${esc(p.player_name)}','${p.player_id}')">
-      <div class="chip-img">${p.player_image?`<img src="${p.player_image}"/>`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:#00C853">${initials(p.player_name)}</div>`}</div>
+  return players.map(function(p){ return `
+    <div class="player-chip" id="chip-${side}-${p.player_id}" onclick="selectPlayer('${side}','${esc(p.player_name)}','${esc(p.player_id)}')">
+      <div class="chip-img">${p.player_image?imgTag(p.player_image,200,'','',initials(p.player_name),'1.25rem'):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:#00C853">${initials(p.player_name)}</div>`}</div>
       <p class="chip-name">${p.player_name}</p>
       <p class="chip-num">#${p.player_number||'-'}</p>
-    </div>`).join('');
+    </div>`; }).join('');
 }
 
 // ============================================================
@@ -798,15 +923,15 @@ function openStatsModal(cacheKey){
   const el=document.getElementById('stats-modal-content');
   el.innerHTML=`
     <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-3 mt-2">${c.icon} ${c.title} — ทั้งหมด</p>
-    ${c.players.map((p,i)=>`
-    <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition" onclick="closeModalById('stats-modal');openPlayerModal('${p.player_id}')">
+    ${c.players.map(function(p,i){ return `
+    <div class="card flex items-center gap-3 p-3 mb-1 cursor-pointer hover:border-green-500/30 transition" onclick="closeModalById('stats-modal');openPlayerModal('${esc(p.player_id)}')">
       <span class="font-display font-black text-xl w-6 text-center ${i===0?'text-green-400':i===1?'text-gray-400':i===2?'text-amber-600':'text-[#2E3D34]'}">${i+1}</span>
       <div class="w-10 h-10 rounded-full overflow-hidden border border-[#1E2B22] shrink-0 bg-[#0A0F0D]">
-        ${p.player_image?`<img src="${p.player_image}" class="w-full h-full object-cover"/>`:`<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
+        ${p.player_image?imgTag(p.player_image,96,'w-full h-full object-cover','',initials(p.player_name),'.75rem'):`<div class="logo-fallback text-xs">${initials(p.player_name)}</div>`}
       </div>
       <div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${p.player_name}</p><p class="text-[11px] text-[#4A6152] truncate">${p.team_name}</p></div>
       <span class="${c.badgeClass} text-sm font-black px-3 py-1 rounded-full">${p[c.statKey]}</span>
-    </div>`).join('')}`;
+    </div>`; }).join('')}`;
   document.getElementById('stats-modal').classList.add('open');
 }
 
@@ -815,13 +940,13 @@ function openStatsModal(cacheKey){
 // ============================================================
 function openPlayerModal(playerId){
   if(!playerId||playerId==='undefined'){showToast('ไม่พบ ID ผู้เล่น');return;}
-  const p=allPlayers.find(x=>String(x.player_id)===String(playerId));
+  const p=allPlayers.find(function(x){ return String(x.player_id)===String(playerId); });
   if(!p){showToast('ไม่พบข้อมูลผู้เล่น');return;}
-  const s=allScorers.find(x=>String(x.player_id)===String(playerId))||{};
+  const s=allScorers.find(function(x){ return String(x.player_id)===String(playerId); })||{};
   document.getElementById('player-modal-content').innerHTML=`
     <div class="flex flex-col items-center pt-4 pb-2">
       <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
-        ${p.player_image?`<img src="${p.player_image}" class="w-full h-full object-cover"/>`:`<div class="logo-fallback text-2xl">${initials(p.player_name)}</div>`}
+        ${p.player_image?imgTag(p.player_image,200,'w-full h-full object-cover','',initials(p.player_name),'1.5rem'):`<div class="logo-fallback text-2xl">${initials(p.player_name)}</div>`}
       </div>
       <h2 class="font-display font-black text-2xl text-white">${p.player_name}</h2>
       <p class="text-sm text-[#4A6152] mb-1">${p.team_name}</p>
@@ -829,12 +954,12 @@ function openPlayerModal(playerId){
       ${p.player_position?`<span class="mt-1 text-[10px] font-display font-bold px-3 py-0.5 rounded-full bg-green-500/10 text-green-400">${p.player_position}</span>`:''}
     </div>
     <div class="grid grid-cols-3 gap-2 mt-3 mb-2">
-      ${[['goals','⚽','text-green-400'],['assists','🅰','text-blue-400'],['owngoal','🔴','text-red-400']].map(([k,icon,col])=>`
-      <div class="card flex flex-col items-center py-3"><span class="text-2xl font-black ${col}">${s[k]||0}</span><span class="text-[10px] text-[#4A6152] mt-0.5">${icon}</span></div>`).join('')}
+      ${[['goals','⚽','text-green-400'],['assists','🅰','text-blue-400'],['owngoal','🔴','text-red-400']].map(function(a){ return `
+      <div class="card flex flex-col items-center py-3"><span class="text-2xl font-black ${a[2]}">${s[a[0]]||0}</span><span class="text-[10px] text-[#4A6152] mt-0.5">${a[1]}</span></div>`; }).join('')}
     </div>
     <div class="grid grid-cols-3 gap-2">
-      ${[['yellow','🟨','text-yellow-400'],['red','🟥','text-red-600'],['saves','🧤','text-blue-300']].map(([k,icon,col])=>`
-      <div class="card flex flex-col items-center py-3"><span class="text-2xl font-black ${col}">${s[k]||0}</span><span class="text-[10px] text-[#4A6152] mt-0.5">${icon}</span></div>`).join('')}
+      ${[['yellow','🟨','text-yellow-400'],['red','🟥','text-red-600'],['saves','🧤','text-blue-300']].map(function(a){ return `
+      <div class="card flex flex-col items-center py-3"><span class="text-2xl font-black ${a[2]}">${s[a[0]]||0}</span><span class="text-[10px] text-[#4A6152] mt-0.5">${a[1]}</span></div>`; }).join('')}
     </div>`;
   document.getElementById('player-modal').classList.add('open');
 }
@@ -843,12 +968,12 @@ function openPlayerModal(playerId){
 // TEAM MODAL
 // ============================================================
 function openTeamModal(teamName){
-  const team=allTeams.find(t=>t.team_name===teamName)||{};
-  const players=allPlayers.filter(p=>p.team_name===teamName);
-  const smap={}; allScorers.forEach(s=>{smap[s.player_id]=s;});
+  const team=allTeams.find(function(t){ return t.team_name===teamName; })||{};
+  const players=allPlayers.filter(function(p){ return p.team_name===teamName; });
+  const smap={}; allScorers.forEach(function(s){ smap[s.player_id]=s; });
   let W=0,D=0,L=0,F=0,A=0;
-  allMatches.filter(m=>(m.status==='FT'||m.status==='Finished')&&(m.home_team===teamName||m.away_team===teamName))
-    .forEach(m=>{
+  allMatches.filter(function(m){ return (m.status==='FT'||m.status==='Finished')&&(m.home_team===teamName||m.away_team===teamName); })
+    .forEach(function(m){
       const hs=Number(m.home_score),as=Number(m.away_score);
       const ih=m.home_team===teamName; const gf=ih?hs:as,ga=ih?as:hs;
       F+=gf;A+=ga;if(gf>ga)W++;else if(gf<ga)L++;else D++;
@@ -856,7 +981,7 @@ function openTeamModal(teamName){
   document.getElementById('team-modal-content').innerHTML=`
     <div class="flex flex-col items-center pt-4 pb-3">
       <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] mb-3">
-        ${team.logo?`<img src="${team.logo}" class="w-full h-full object-cover"/>`:`<div class="logo-fallback text-2xl">${initials(teamName)}</div>`}
+        ${team.logo?imgTag(team.logo,128,'w-full h-full object-cover','',initials(teamName),'1.5rem'):`<div class="logo-fallback text-2xl">${initials(teamName)}</div>`}
       </div>
       <h2 class="font-display font-black text-2xl text-white mb-1">${teamName}</h2>
       <div class="flex gap-4 text-center mt-1 mb-4">
@@ -868,12 +993,12 @@ function openTeamModal(teamName){
     </div>
     <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">⚽ ผู้เล่น (${players.length} คน)</p>
     <div class="grid grid-cols-3 gap-2">
-      ${players.length?players.map(p=>{
+      ${players.length?players.map(function(p){
         const s=smap[p.player_id]||{};
         return `
-        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition" onclick="closeModalById('team-modal');openPlayerModal('${p.player_id}')">
+        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition" onclick="closeModalById('team-modal');openPlayerModal('${esc(p.player_id)}')">
           <div class="w-full aspect-square rounded-lg overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] mb-1.5">
-            ${p.player_image?`<img src="${p.player_image}" class="w-full h-full object-cover"/>`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
+            ${p.player_image?imgTag(p.player_image,200,'w-full h-full object-cover','',initials(p.player_name),'1.4rem'):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
           </div>
           <p class="text-xs font-semibold leading-tight truncate w-full">${p.player_name}</p>
           <p class="text-[10px] text-[#4A6152] mb-1">#${p.player_number||'-'}</p>
@@ -898,31 +1023,46 @@ function closeModalOutside(e,id){ if(e.target===document.getElementById(id)) clo
 // ============================================================
 // HELPERS
 // ============================================================
-function teamLogo(n){ const t=allTeams.find(t=>t.team_name===n); return t?t.logo:''; }
+function teamLogo(n){ return logoMap[n] || ''; }
 
-function logoImg(url,name,size){
-  const s=`width:${size}px;height:${size}px;border-radius:${size/2}px;overflow:hidden;background:#0A0F0D;border:1px solid #1E2B22;flex-shrink:0;`;
-  if(url) return `<div style="${s}"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"/></div>`;
-  return `<div style="${s}display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${Math.round(size*.35)}px;color:#00C853;">${initials(name)}</div>`;
+// ขอรูป Drive ขนาดพอดีกับที่แสดงจริง (server ส่งมา sz=w200 เสมอ)
+function thumb(url,w){ return String(url).replace(/([?&]sz=)w\d+/, '$1w'+w); }
+function ea(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// <img> มาตรฐาน: lazy + async decode + ถ้าโหลดไม่ขึ้น (เช่น Drive จำกัดโควตา) ให้แสดงตัวย่อแทนรูปเสีย
+function imgTag(url,w,cls,style,ini,fs){
+  return `<img src="${ea(thumb(url,w))}"${cls?` class="${cls}"`:''}${style?` style="${style}"`:''} alt="" loading="lazy" decoding="async" data-i="${ea(ini)}" data-fs="${fs||''}" onerror="imgFail(this)"/>`;
+}
+function imgFail(im){
+  const d=document.createElement('div');
+  d.className='logo-fallback';
+  d.textContent=im.getAttribute('data-i')||'?';
+  const fs=im.getAttribute('data-fs'); if(fs) d.style.fontSize=fs;
+  im.parentNode.replaceChild(d,im);
 }
 
-function logoImgRaw(url,name,size){
+function logoImg(url,name,size,k){
+  k=k||.35;
+  const fs=Math.round(size*k)+'px';
   const s=`width:${size}px;height:${size}px;border-radius:${size/2}px;overflow:hidden;background:#0A0F0D;border:1px solid #1E2B22;flex-shrink:0;`;
-  if(url) return `<div style="${s}"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"/></div>`;
-  return `<div style="${s}display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${Math.round(size*.4)}px;color:#00C853;">${initials(name)}</div>`;
+  if(url) return `<div style="${s}">${imgTag(url,size>32?128:96,'','width:100%;height:100%;object-fit:cover;',initials(name),fs)}</div>`;
+  return `<div style="${s}display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${fs};color:#00C853;">${initials(name)}</div>`;
 }
+function logoImgRaw(url,name,size){ return logoImg(url,name,size,.4); }
 
-function initials(name){ if(!name)return'?'; return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
-function esc(s){ return String(s||'').replace(/'/g,"\\'"); }
+function initials(name){ if(!name)return'?'; return String(name).split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2); }
+// ใช้ใน onclick="fn('...')" — escape \ ' " ให้ปลอดภัยแม้ชื่อทีมมีเครื่องหมายพิเศษ
+function esc(s){ return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function formatDate(ds){
   if(!ds||ds==='TBD')return'TBD';
-  try{ const[y,m,d]=ds.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('th-TH',{weekday:'short',month:'short',day:'numeric'}); }
-  catch{return ds;}
+  try{ const p=ds.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]).toLocaleDateString('th-TH',{weekday:'short',month:'short',day:'numeric'}); }
+  catch(e){return ds;}
 }
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.style.opacity='1';
-  setTimeout(()=>{t.style.opacity='0';},2200);
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(function(){ t.style.opacity='0'; },2200);
 }
 </script>
 </body>
