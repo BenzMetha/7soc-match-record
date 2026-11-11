@@ -196,6 +196,7 @@ button:disabled{opacity:.6;}
 <div id="stats-modal"      class="modal-overlay" onclick="closeModalOutside(event,'stats-modal')">  <div class="modal-box"><div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div><div id="stats-modal-content"  class="px-4 pb-6"></div></div></div>
 <div id="player-modal"     class="modal-overlay" onclick="closeModalOutside(event,'player-modal')"> <div class="modal-box"><div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div><div id="player-modal-content" class="px-4 pb-6"></div></div></div>
 <div id="team-modal"       class="modal-overlay" onclick="closeModalOutside(event,'team-modal')">   <div class="modal-box"><div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div><div id="team-modal-content"   class="px-4 pb-6"></div></div></div>
+<div id="player-form-modal" class="modal-overlay" onclick="closeModalOutside(event,'player-form-modal')" style="z-index:60"><div class="modal-box"><div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 rounded-full bg-[#2E3D34]"></div></div><div id="player-form-content" class="px-4 pb-6"></div></div></div>
 
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full bg-green-500 text-black font-bold text-sm opacity-0 pointer-events-none transition-opacity duration-300 whitespace-nowrap"></div>
 
@@ -208,6 +209,7 @@ let allLeagues = [], allMatches = [], allPlayers = [], allTeams = [], allScorers
 let logoMap = {}, statsCache = {}, currentFilter = 'all';
 let activeModal = null, currentLeague = null, busy = false;
 let selectedEvPlayer = null, selectedEvPlayerId = null, selectedEvSide = 'home';
+let editingPlayerId = null, editingTeamName = null, editingLeagueId = null, pendingPhoto = null;
 
 // ── SAFE STORAGE (บาง in-app browser โยน error เมื่อแตะ localStorage) ──
 function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
@@ -390,6 +392,19 @@ async function apiWrite(action, data) {
   try {
     return await api(action, { data: JSON.stringify(payload) }, { retry: false, timeout: 30000 });
   } catch(e) { return { error: 'network' }; }
+}
+// เขียนผ่าน POST (ไม่ใช่ querystring) — ต้องใช้ตอนมีรูปแนบ (base64) เพราะ GET มี limit ความยาว URL
+// สำคัญ: ห้ามตั้ง header 'Content-Type: application/json' เอง เดี๋ยว browser จะยิง CORS preflight (OPTIONS)
+// ซึ่ง Apps Script Web App ไม่รองรับ — ปล่อยให้ fetch ใส่ text/plain ให้เองแบบ default
+async function apiPostJSON(action, data, timeoutMs) {
+  const ctrl = new AbortController();
+  const t = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 30000);
+  try {
+    const res  = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, data: data }), signal: ctrl.signal });
+    const json = await res.json();
+    clearTimeout(t);
+    return json;
+  } catch(e) { clearTimeout(t); return { error: 'network' }; }
 }
 
 // ── TABS ─────────────────────────────────────────────────────
@@ -991,12 +1006,16 @@ function openTeamModal(teamName){
         <div><p class="text-xl font-black text-white">${F}-${A}</p><p class="text-[10px] text-[#4A6152]">GF-GA</p></div>
       </div>
     </div>
-    <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152] mb-2 px-1">⚽ ผู้เล่น (${players.length} คน)</p>
+    <div class="flex items-center justify-between mb-2 px-1">
+      <p class="font-display font-bold text-xs tracking-widest uppercase text-[#4A6152]">⚽ ผู้เล่น (${players.length} คน)</p>
+      <button onclick="openAddPlayerForm('${esc(teamName)}')" class="text-[11px] font-display font-bold text-green-400 border border-green-500/30 rounded-full px-3 py-1 hover:bg-green-500/10 transition shrink-0">+ เพิ่มนักกีฬา</button>
+    </div>
     <div class="grid grid-cols-3 gap-2">
       ${players.length?players.map(function(p){
         const s=smap[p.player_id]||{};
         return `
-        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition" onclick="closeModalById('team-modal');openPlayerModal('${esc(p.player_id)}')">
+        <div class="card p-2 flex flex-col items-center text-center cursor-pointer hover:border-green-500/40 transition relative" onclick="closeModalById('team-modal');openPlayerModal('${esc(p.player_id)}')">
+          <button onclick="event.stopPropagation();openEditPlayerForm('${esc(p.player_id)}')" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-[10px] z-10" title="แก้ไข">✏️</button>
           <div class="w-full aspect-square rounded-lg overflow-hidden border border-[#1E2B22] bg-[#0A0F0D] mb-1.5">
             ${p.player_image?imgTag(p.player_image,200,'w-full h-full object-cover','',initials(p.player_name),'1.4rem'):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#00C853">${initials(p.player_name)}</div>`}
           </div>
@@ -1012,6 +1031,141 @@ function openTeamModal(teamName){
         </div>`;}).join(''):'<p class="text-xs text-[#4A6152] col-span-3 py-2">ยังไม่มีผู้เล่น</p>'}
     </div>`;
   document.getElementById('team-modal').classList.add('open');
+}
+
+// ============================================================
+// PLAYER FORM — เพิ่ม / แก้ไขนักกีฬา (+ ถ่ายรูปจากกล้องมือถือ)
+// ============================================================
+function openAddPlayerForm(teamName) {
+  editingPlayerId = null;
+  editingTeamName = teamName;
+  editingLeagueId = currentLeague ? currentLeague.league_id : null;
+  pendingPhoto = null;
+  renderPlayerForm({ player_name:'', player_number:'', birth_year:'', player_image:'' });
+  document.getElementById('player-form-modal').classList.add('open');
+}
+
+function openEditPlayerForm(playerId) {
+  const p = allPlayers.find(function(x){ return String(x.player_id) === String(playerId); });
+  if (!p) { showToast('ไม่พบข้อมูลผู้เล่น'); return; }
+  editingPlayerId = p.player_id;
+  editingTeamName = p.team_name;
+  editingLeagueId = currentLeague ? currentLeague.league_id : null;
+  pendingPhoto = null;
+  renderPlayerForm(p);
+  document.getElementById('player-form-modal').classList.add('open');
+}
+
+function renderPlayerForm(p) {
+  const photoSrc = p.player_image ? thumb(p.player_image, 200) : '';
+  document.getElementById('player-form-content').innerHTML = `
+    <p class="font-display font-bold text-sm tracking-widest uppercase text-[#4A6152] mb-4 mt-2">${editingPlayerId?'แก้ไขนักกีฬา':'เพิ่มนักกีฬา'}</p>
+    <div class="flex justify-center mb-4">
+      <label class="relative cursor-pointer">
+        <div id="pf-photo-preview" class="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500/30 bg-[#0A0F0D] flex items-center justify-center">
+          ${photoSrc?`<img src="${ea(photoSrc)}" class="w-full h-full object-cover" onerror="this.style.display='none'"/>`:`<span class="text-[10px] text-[#4A6152] text-center px-2">แตะเพื่อ<br/>ถ่ายรูป</span>`}
+        </div>
+        <input id="pf-photo-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelect(event)"/>
+        <div class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-black text-xs">📷</div>
+      </label>
+    </div>
+    <div class="mb-3">
+      <label class="text-[10px] text-[#4A6152] mb-1 block">ชื่อนักกีฬา *</label>
+      <input id="pf-name" type="text" value="${ea(p.player_name||'')}" class="w-full bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"/>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mb-4">
+      <div>
+        <label class="text-[10px] text-[#4A6152] mb-1 block">เบอร์เสื้อ</label>
+        <input id="pf-number" type="text" value="${ea(p.player_number||'')}" class="w-full bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"/>
+      </div>
+      <div>
+        <label class="text-[10px] text-[#4A6152] mb-1 block">ปีเกิด (ไม่บังคับ)</label>
+        <input id="pf-year" type="number" value="${ea(p.birth_year||'')}" placeholder="เช่น 1998" class="w-full bg-[#0A0F0D] border border-[#1E2B22] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"/>
+      </div>
+    </div>
+    <button id="pf-save-btn" onclick="submitPlayerForm()" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold font-display py-2.5 rounded-xl transition">บันทึก</button>`;
+}
+
+async function handlePhotoSelect(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    const result = await resizeImageToBase64(file, 800, 0.75);
+    pendingPhoto = result;
+    const prev = document.getElementById('pf-photo-preview');
+    if (prev) prev.innerHTML = `<img src="${result.dataUrl}" class="w-full h-full object-cover"/>`;
+  } catch(err) { showToast('อ่านรูปไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+}
+
+// ย่อรูปด้วย canvas ก่อนอัปโหลด กันไฟล์ใหญ่เกินไป (กล้องมือถือมักได้รูป 3-10MB)
+function resizeImageToBase64(file, maxDim, quality) {
+  return new Promise(function(resolve, reject) {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onerror = function(){ reject(new Error('read fail')); };
+    reader.onload = function() {
+      img.onerror = function(){ reject(new Error('decode fail')); };
+      img.onload = function() {
+        let w = img.width, h = img.height;
+        if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve({ dataUrl: dataUrl, base64: dataUrl.split(',')[1], mime: 'image/jpeg' });
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitPlayerForm() {
+  if (busy) return;
+  const nameEl = document.getElementById('pf-name');
+  const name   = nameEl.value.trim();
+  const number = document.getElementById('pf-number').value.trim();
+  const year   = document.getElementById('pf-year').value.trim();
+  if (!name) { showToast('กรุณากรอกชื่อนักกีฬา'); return; }
+  if (!editingLeagueId) { showToast('ไม่พบข้อมูลลีก กรุณาเปิดหน้าใหม่แล้วลองอีกครั้ง'); return; }
+
+  const btn = document.getElementById('pf-save-btn');
+  busy = true; btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  const payload = {
+    player_id:     editingPlayerId || '',
+    player_name:   name,
+    player_number: number,
+    birth_year:    year,
+    team_name:     editingTeamName,
+    league_id:     editingLeagueId,
+  };
+  if (pendingPhoto) { payload.image_base64 = pendingPhoto.base64; payload.image_mime = pendingPhoto.mime; }
+
+  try {
+    const res = await apiPostJSON('savePlayer', payload, 45000);
+    if (res && res.success) {
+      showToast(editingPlayerId ? 'แก้ไขสำเร็จ ✅' : 'เพิ่มนักกีฬาสำเร็จ ✅');
+      closeModalById('player-form-modal');
+      const lid = editingLeagueId, teamForReopen = editingTeamName;
+      const ckey = 'lh_' + lid;
+      lsDel(ckey);
+      try {
+        const fd = await api('getInitialData', { leagueId: lid });
+        if (fd && !fd.error && currentLeague && String(currentLeague.league_id) === String(lid)) {
+          applyData(fd);
+          lsSet(ckey, JSON.stringify(fd));
+          openTeamModal(teamForReopen);
+        }
+      } catch(e) {}
+    } else {
+      showToast('เกิดข้อผิดพลาด ❌ ' + (res && res.error ? res.error : 'ลองอีกครั้ง'));
+    }
+  } finally {
+    busy = false;
+    const b = document.getElementById('pf-save-btn');
+    if (b) { b.disabled = false; b.textContent = 'บันทึก'; }
+  }
 }
 
 // ============================================================
